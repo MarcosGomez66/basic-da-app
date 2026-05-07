@@ -1,49 +1,131 @@
+import 'package:basic_da_app/models/business_model.dart';
+import 'package:basic_da_app/models/product_model.dart';
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 
-class WelcomeScreen extends StatelessWidget {
+class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});
 
   @override
+  State<WelcomeScreen> createState() => _WelcomeScreenState();
+}
+
+class _WelcomeScreenState extends State<WelcomeScreen> {
+  late Box<BusinessModel> businessBox;
+
+  @override
+  void initState() {
+    super.initState();
+    businessBox = Hive.box<BusinessModel>('businesses');
+  }
+
+  void createBusiness(String name) {
+    final business = BusinessModel(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      name: name
+    );
+    businessBox.add(business);
+    setState(() {});
+  }
+
+  void showCreateDialog() {
+    final controller = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Nuevo negocio'),
+        content: TextField(
+          controller: controller,
+          decoration: const InputDecoration(
+            hintText: 'Ingrese el nombre del negocio'
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancelar'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              if (controller.text.isNotEmpty) {
+                createBusiness(controller.text);
+                Navigator.pop(context);
+              }
+            },
+            child: const Text('Crear'),
+          )
+        ],
+      )
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final List<String> business = [
-      'Despensa',
-      'Venta de bebidas en general',
-      'Venta de ropas',
-    ];
+    final businesses = businessBox.values.toList();
 
     return Scaffold(
-      body: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            //texto de bienvenida
-            const Text(
-              'Bienvenido!, selecciona un negocio o crea uno nuevo',
-              style: TextStyle(fontSize: 18),
-            ),
-            const SizedBox(height: 20),
-            //lista de negocios
-            Expanded(
-              child: ListView.builder(
-                itemCount: business.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    leading: const Icon(Icons.store),
-                    title: Text(business[index]),
-                    trailing: const Icon(Icons.arrow_forward_ios),
-                    onTap: () {
-                      Navigator.pushNamed(
-                        context,
-                        '/home',
-                        arguments: business[index],
-                      );
-                    },
-                  );
-                },
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const SizedBox(height: 40,),
+              // Texto de bienvenida
+              const Text(
+                'Bienvenido/a',
+                style: TextStyle(
+                  fontSize: 36,
+                  color: Colors.grey
+                ),
+                textAlign: TextAlign.center,
               ),
-            ),
-          ],
+              const Text(
+                'Selecciona un negocio o crea uno nuevo',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.grey
+                ),
+                textAlign: TextAlign.center,
+              ),
+              //lista de negocios
+              Expanded(
+                child: businesses.isEmpty ? const Center(
+                  child: Text('No hay negocios', style: TextStyle(fontSize: 16),),
+                ) : ListView.builder(
+                  itemCount: businesses.length,
+                  itemBuilder: (context, index) {
+                    final business = businesses[index];
+
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      child: Card(
+                        elevation: 2,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: ListTile(
+                          title: Text(business.name, textAlign: TextAlign.center,),
+                          onTap: () {},
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(height: 20,),
+              //Boton
+              SizedBox(
+                width: double.infinity,
+                height: 55,
+                child: ElevatedButton(
+                  onPressed: showCreateDialog,
+                  child: const Text('Crear nuevo negocio'),
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );
