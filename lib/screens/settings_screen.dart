@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:basic_da_app/providers/business_provider.dart';
+import 'package:provider/provider.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -10,14 +12,21 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
-    final String businessName = ModalRoute.of(context)!.settings.arguments as String;
+    final business = context.watch<BusinessProvider>().selectedBusiness;
+
+    if (business == null) {
+      return const Center(
+        child: Text('No hay negocio seleccionado'),
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: Text('Configuración'),
       ),
       body: Center(
-        child: Text('Configuración del negocio: $businessName'),
+        child: Text('Configuración del negocio: ${business.name}'),
       ),
       /*
         Lista de configuraciones posibles

@@ -1,8 +1,10 @@
+import 'package:basic_da_app/providers/business_provider.dart';
 import 'package:basic_da_app/screens/summary_screen.dart';
 import 'package:basic_da_app/screens/dashboard_screen.dart';
 import 'package:basic_da_app/screens/stock_screen.dart';
 import 'package:basic_da_app/screens/settings_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class MainLayout extends StatefulWidget {
   const MainLayout({super.key});
@@ -13,7 +15,7 @@ class MainLayout extends StatefulWidget {
 
 class _MainLayoutState extends State<MainLayout> {
   int currentIndex = 0;
-  final List<Widget> screens = [
+  final List<Widget> screens = const [
     SummaryScreen(),
     DashboardScreen(),
     StockScreen(),

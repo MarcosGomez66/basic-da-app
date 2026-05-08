@@ -1,7 +1,9 @@
 import 'package:basic_da_app/models/business_model.dart';
 import 'package:basic_da_app/models/product_model.dart';
+import 'package:basic_da_app/providers/business_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:provider/provider.dart';
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});
@@ -107,7 +109,14 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                         ),
                         child: ListTile(
                           title: Text(business.name, textAlign: TextAlign.center,),
-                          onTap: () {},
+                          onTap: () {
+                            context.read<BusinessProvider>().selectBusiness(business);
+
+                            Navigator.pushNamed(
+                              context,
+                              '/home'
+                            );
+                          },
                         ),
                       ),
                     );

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:basic_da_app/providers/business_provider.dart';
+import 'package:provider/provider.dart';
 
 class StockScreen extends StatefulWidget {
   const StockScreen({super.key});
@@ -10,14 +12,21 @@ class StockScreen extends StatefulWidget {
 class _StockScreenState extends State<StockScreen> {
   @override
   Widget build(BuildContext context) {
-    final String businessName = ModalRoute.of(context)!.settings.arguments as String;
+    final business = context.watch<BusinessProvider>().selectedBusiness;
+
+    if (business == null) {
+      return const Center(
+        child: Text('No hay negocio seleccionado'),
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: Text('Lista de productos'),
       ),
       body: Center(
-        child: Text('Lista de todos los productos del negocio: $businessName'),
+        child: Text('Lista de todos los productos del negocio: ${business.name}'),
       ),
       /*
         Boton en el appbar(actions) para agregar nuevo producto
