@@ -1,5 +1,4 @@
 import 'package:basic_da_app/models/business_model.dart';
-import 'package:basic_da_app/models/product_model.dart';
 import 'package:basic_da_app/providers/business_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';

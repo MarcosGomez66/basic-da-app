@@ -1,41 +1,44 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'product_model.dart';
+part of 'workday_model.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator
 // **************************************************************************
 
-class ProductModelAdapter extends TypeAdapter<ProductModel> {
+class WorkdayModelAdapter extends TypeAdapter<WorkdayModel> {
   @override
-  final int typeId = 2;
+  final int typeId = 1;
 
   @override
-  ProductModel read(BinaryReader reader) {
+  WorkdayModel read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return ProductModel(
+    return WorkdayModel(
       id: fields[0] as String,
-      name: fields[1] as String,
-      price: fields[2] as double,
-      stock: fields[3] as int,
+      businessId: fields[1] as String,
+      startTime: fields[2] as DateTime,
+      endTime: fields[3] as DateTime?,
+      isOpen: fields[4] as bool,
     );
   }
 
   @override
-  void write(BinaryWriter writer, ProductModel obj) {
+  void write(BinaryWriter writer, WorkdayModel obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(5)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
-      ..write(obj.name)
+      ..write(obj.businessId)
       ..writeByte(2)
-      ..write(obj.price)
+      ..write(obj.startTime)
       ..writeByte(3)
-      ..write(obj.stock);
+      ..write(obj.endTime)
+      ..writeByte(4)
+      ..write(obj.isOpen);
   }
 
   @override
@@ -44,7 +47,7 @@ class ProductModelAdapter extends TypeAdapter<ProductModel> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is ProductModelAdapter &&
+      other is WorkdayModelAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

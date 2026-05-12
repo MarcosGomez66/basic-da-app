@@ -25,7 +25,10 @@ class _MainLayoutState extends State<MainLayout> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: screens[currentIndex],
+      body: IndexedStack(
+        index: currentIndex,
+        children: screens,
+      ),
       //boton central para vender
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.point_of_sale, color: Colors.white,),
