@@ -1,11 +1,14 @@
-import 'package:basic_da_app/models/workday_model.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+
+import 'package:basic_da_app/models/workday_model.dart';
 
 class WorkdayProvider extends ChangeNotifier {
   WorkdayModel? currentWorkday;
 
   final Box<WorkdayModel> workdayBox = Hive.box<WorkdayModel>('workdays');
+
+  bool get isWorkdayOpen => currentWorkday != null;
 
   void loadCurrentWorkday(String businessId) {
     try {
