@@ -1,10 +1,10 @@
 import 'package:basic_da_app/widgets/detalles.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
+//providers
 import 'package:basic_da_app/providers/workday_provider.dart';
 import 'package:basic_da_app/providers/business_provider.dart';
-
+//widgets
 import 'package:basic_da_app/widgets/workday_status_widget.dart';
 
 class SummaryScreen extends StatelessWidget {
@@ -16,7 +16,6 @@ class SummaryScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false,
         title: const Text('Inicio'),
       ),
       body: Center(
@@ -28,6 +27,7 @@ class SummaryScreen extends StatelessWidget {
                   businessId: businessId,
                   currentWorkday: workdayProvider.currentWorkday,
                 ),
+                //detalles temporal
                 Detalles(
                   businessId: businessId,
                   workday: workdayProvider.currentWorkday,

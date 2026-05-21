@@ -12,9 +12,9 @@ class Detalles extends StatelessWidget {
       return Column(
         children: [
           Text(businessId),
-          Text(workday?.id ?? 'sin jornada'),
-          Text(workday?.startTime.toString() ?? 'sin jornada'),
-          Text(workday?.businessId.toString() ?? 'sin jornada')
+          Text(workday!.id),
+          Text(workday!.endTime.toString()),
+          Text(workday!.businessId)
         ],
       );
     }

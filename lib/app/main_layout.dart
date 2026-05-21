@@ -1,10 +1,13 @@
-import 'package:basic_da_app/providers/business_provider.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+//screens
 import 'package:basic_da_app/screens/summary_screen.dart';
 import 'package:basic_da_app/screens/dashboard_screen.dart';
 import 'package:basic_da_app/screens/stock_screen.dart';
 import 'package:basic_da_app/screens/settings_screen.dart';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+//providers
+import 'package:basic_da_app/providers/workday_provider.dart';
+import 'package:basic_da_app/providers/business_provider.dart';
 
 class MainLayout extends StatefulWidget {
   const MainLayout({super.key});
@@ -21,6 +24,16 @@ class _MainLayoutState extends State<MainLayout> {
     StockScreen(),
     SettingsScreen(),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final businessId = context.read<BusinessProvider>().selectedBusiness!.id;
+      context.read<WorkdayProvider>().loadCurrentWorkday(businessId);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {

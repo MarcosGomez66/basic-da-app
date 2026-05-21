@@ -1,8 +1,8 @@
 import 'package:basic_da_app/providers/workday_provider.dart';
 import 'package:flutter/material.dart';
-
+// models
 import 'package:basic_da_app/models/workday_model.dart';
-
+//providers
 import 'package:provider/provider.dart';
 
 class WorkdayStatusWidget extends StatelessWidget {

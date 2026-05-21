@@ -1,8 +1,10 @@
-import 'package:basic_da_app/models/business_model.dart';
-import 'package:basic_da_app/providers/business_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
+//models
+import 'package:basic_da_app/models/business_model.dart';
+//providers
+import 'package:basic_da_app/providers/business_provider.dart';
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});
