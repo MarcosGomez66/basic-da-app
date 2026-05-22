@@ -8,7 +8,7 @@ part of 'product_model.dart';
 
 class ProductModelAdapter extends TypeAdapter<ProductModel> {
   @override
-  final int typeId = 2;
+  final int typeId = 3;
 
   @override
   ProductModel read(BinaryReader reader) {
@@ -18,24 +18,48 @@ class ProductModelAdapter extends TypeAdapter<ProductModel> {
     };
     return ProductModel(
       id: fields[0] as String,
-      name: fields[1] as String,
-      price: fields[2] as double,
-      stock: fields[3] as int,
+      businessId: fields[1] as String,
+      lotId: fields[2] as String,
+      name: fields[3] as String,
+      group: fields[4] as String,
+      cost: fields[5] as double,
+      price: fields[6] as double,
+      stock: fields[7] as double,
+      minStock: fields[8] as double,
+      isActive: fields[9] as bool,
+      uploadedAt: fields[10] as DateTime,
+      endedAt: fields[11] as DateTime?,
     );
   }
 
   @override
   void write(BinaryWriter writer, ProductModel obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(12)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
-      ..write(obj.name)
+      ..write(obj.businessId)
       ..writeByte(2)
-      ..write(obj.price)
+      ..write(obj.lotId)
       ..writeByte(3)
-      ..write(obj.stock);
+      ..write(obj.name)
+      ..writeByte(4)
+      ..write(obj.group)
+      ..writeByte(5)
+      ..write(obj.cost)
+      ..writeByte(6)
+      ..write(obj.price)
+      ..writeByte(7)
+      ..write(obj.stock)
+      ..writeByte(8)
+      ..write(obj.minStock)
+      ..writeByte(9)
+      ..write(obj.isActive)
+      ..writeByte(10)
+      ..write(obj.uploadedAt)
+      ..writeByte(11)
+      ..write(obj.endedAt);
   }
 
   @override

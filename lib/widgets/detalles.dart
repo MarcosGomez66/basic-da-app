@@ -13,7 +13,7 @@ class Detalles extends StatelessWidget {
         children: [
           Text(businessId),
           Text(workday!.id),
-          Text(workday!.endTime.toString()),
+          Text(workday!.startTime.toString()),
           Text(workday!.businessId)
         ],
       );
