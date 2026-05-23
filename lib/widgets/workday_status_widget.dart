@@ -17,7 +17,15 @@ class WorkdayStatusWidget extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         StatusText(isOpen: isOpen),
-        StatusButton(businessId: businessId, isOpen: isOpen)
+        SizedBox(height: 6),
+        StatusButton(businessId: businessId, isOpen: isOpen),
+        SizedBox(height: 6),
+        TextButton(
+          child: Text('Ver todas las Jornadas'),
+          onPressed: () {
+            Navigator.pushNamed(context, '/workdays');
+          },
+        )
       ],
     );
   }

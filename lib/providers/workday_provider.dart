@@ -44,4 +44,14 @@ class WorkdayProvider extends ChangeNotifier {
     currentWorkday = null;
     notifyListeners();
   }
+
+  List<WorkdayModel> getWorkdays(String businessId) {
+    final workdays = workdayBox.values.where(
+        (e) => e.businessId == businessId
+    ).toList();
+    workdays.sort(
+        (a, b) => b.startTime.compareTo(a.startTime)
+    );
+    return workdays;
+  }
 }
