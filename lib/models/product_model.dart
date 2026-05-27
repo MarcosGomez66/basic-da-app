@@ -20,13 +20,13 @@ class ProductModel extends HiveObject {
   final String group;
 
   @HiveField(5)
-  final double cost;
+  final double cost; //precio de compra
 
   @HiveField(6)
-  final double price;
+  final double price; // precio de venta
 
   @HiveField(7)
-  final double stock;
+  final double stock; //cantidad
 
   @HiveField(8)
   double minStock;
@@ -35,10 +35,10 @@ class ProductModel extends HiveObject {
   bool isActive;
 
   @HiveField(10)
-  final DateTime uploadedAt;
+  final DateTime uploaded;
 
   @HiveField(11)
-  DateTime? endedAt;
+  DateTime? ended;
 
   ProductModel({
     required this.id,
@@ -51,7 +51,7 @@ class ProductModel extends HiveObject {
     required this.stock,
     this.minStock = 1,
     this. isActive = true,
-    required this.uploadedAt,
-    this.endedAt
+    required this.uploaded,
+    this.ended
 });
 }

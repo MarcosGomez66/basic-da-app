@@ -17,17 +17,17 @@ class LotModel extends HiveObject {
   bool isActive;
 
   @HiveField(4)
-  final DateTime uploadedAt;
+  final DateTime uploaded;
 
   @HiveField(5)
-  DateTime? endedAt;
+  DateTime? ended;
 
   LotModel({
     required this.id,
     required this.businessId,
     required this.budget,
     this.isActive = true,
-    required this.uploadedAt,
-    this.endedAt
+    required this.uploaded,
+    this.ended
 });
 }

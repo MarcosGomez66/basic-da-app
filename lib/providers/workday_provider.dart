@@ -36,9 +36,7 @@ class WorkdayProvider extends ChangeNotifier {
   Future<void> endWorkday() async {
     if (currentWorkday == null) return;
 
-    currentWorkday!
-      ..endTime = DateTime.now()
-      ..isOpen = false;
+    currentWorkday!..endTime = DateTime.now()..isOpen = false;
 
     await currentWorkday!.save();
     currentWorkday = null;

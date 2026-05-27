@@ -21,8 +21,8 @@ class LotModelAdapter extends TypeAdapter<LotModel> {
       businessId: fields[1] as String,
       budget: fields[2] as double?,
       isActive: fields[3] as bool,
-      uploadedAt: fields[4] as DateTime,
-      endedAt: fields[5] as DateTime?,
+      uploaded: fields[4] as DateTime,
+      ended: fields[5] as DateTime?,
     );
   }
 
@@ -39,9 +39,9 @@ class LotModelAdapter extends TypeAdapter<LotModel> {
       ..writeByte(3)
       ..write(obj.isActive)
       ..writeByte(4)
-      ..write(obj.uploadedAt)
+      ..write(obj.uploaded)
       ..writeByte(5)
-      ..write(obj.endedAt);
+      ..write(obj.ended);
   }
 
   @override
