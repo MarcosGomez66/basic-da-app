@@ -22,6 +22,19 @@ class _StockScreenState extends State<StockScreen> {
       );
     }
 
-    return Scaffold();
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Productos'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.add),
+            onPressed: () {
+              Navigator.pushNamed(context, '/lot', arguments: 'new');
+            },
+          )
+        ],
+      ),
+      body: Center(),
+    );
   }
 }
