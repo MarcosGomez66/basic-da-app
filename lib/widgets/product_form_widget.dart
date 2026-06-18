@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 //models
-import 'package:basic_da_app/models/product_draft.dart';
+import 'package:basic_da_app/models/product_draft_model.dart';
 
 class ProductFormWidget extends StatefulWidget {
   final ProductDraft? initialProduct;
-  final bool editMode;
   const ProductFormWidget({
     super.key,
     this.initialProduct,
-    this.editMode = false,
   });
 
   @override
@@ -24,12 +22,14 @@ class _ProductFormWidgetState extends State<ProductFormWidget> {
   late final TextEditingController priceController;
   late final TextEditingController costController;
 
+  late CostType costType;
+
   final formKey = GlobalKey<FormState>();
-  CostType costType = CostType.purchase;
 
   @override
   void initState() {
     super.initState();
+    costType = widget.initialProduct?.costType ?? CostType.purchase;
     nameController = TextEditingController(
       text: widget.initialProduct?.name ?? '',
     );
@@ -64,7 +64,7 @@ class _ProductFormWidgetState extends State<ProductFormWidget> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(widget.editMode ? 'Editar producto' : 'Ingresar Producto'),
+      title: Text(widget.initialProduct != null ? 'Editar producto' : 'Ingresar Producto'),
       content: SingleChildScrollView(
         child: Form(
           key: formKey,
@@ -181,13 +181,7 @@ class _ProductFormWidgetState extends State<ProductFormWidget> {
               costType: costType,
               cost: double.parse(costController.text),
             );
-            if (products.contains(widget.initialProduct)) {
-              products.remove(widget.initialProduct);
-              products.add(productDraft);
-            } else {
-              products.add(productDraft);
-            }
-            Navigator.pop(context);
+            Navigator.pop(context, productDraft);
           },
         ),
       ],

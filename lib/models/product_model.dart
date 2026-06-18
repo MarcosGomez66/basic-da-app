@@ -1,4 +1,6 @@
 import 'package:hive/hive.dart';
+//models
+import 'package:basic_da_app/models/product_draft_model.dart';
 
 part 'product_model.g.dart';
 
@@ -20,24 +22,27 @@ class ProductModel extends HiveObject {
   final String group;
 
   @HiveField(5)
-  final double cost; //precio de compra
+  final double price; //precio de compra
 
   @HiveField(6)
-  final double price; // precio de venta
+  final CostType costType;
 
   @HiveField(7)
-  final double stock; //cantidad
+  final double cost; // precio de venta, en caso de presupuesto guardar siempre el dato real y solo hacer la division al mostrar
 
   @HiveField(8)
-  double minStock;
+  final double stock; //cantidad
 
   @HiveField(9)
-  bool isActive;
+  final double minStock;
 
   @HiveField(10)
-  final DateTime uploaded;
+  bool isActive;
 
   @HiveField(11)
+  final DateTime uploaded;
+
+  @HiveField(12)
   DateTime? ended;
 
   ProductModel({
@@ -46,12 +51,13 @@ class ProductModel extends HiveObject {
     required this.lotId,
     required this.name,
     required this.group,
-    required this.cost,
     required this.price,
+    required this.costType,
+    required this.cost,
     required this.stock,
-    this.minStock = 1,
-    this. isActive = true,
+    required this.minStock,
+    this.isActive = true,
     required this.uploaded,
     this.ended
-});
+  });
 }

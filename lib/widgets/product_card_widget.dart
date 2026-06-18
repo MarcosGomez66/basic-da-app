@@ -1,10 +1,11 @@
-import 'package:basic_da_app/widgets/product_form_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 // models
-import 'package:basic_da_app/models/product_draft.dart';
-//providers
-import 'package:basic_da_app/providers/workday_provider.dart';
+import 'package:basic_da_app/models/product_draft_model.dart';
+// providers
+import 'package:basic_da_app/providers/product_draft_provider.dart';
+// widgets
+import 'package:basic_da_app/widgets/product_form_widget.dart';
 
 class ProductCardWidget extends StatelessWidget {
   final ProductDraft product;
@@ -25,36 +26,87 @@ class ProductCardWidget extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Center(child: Text('${product.name} - ${product.group}')),
+            Center(
+              child: Text(
+                product.name,
+                style: TextStyle(fontSize: 22),
+              ),
+            ),
             Row(
               children: [
                 Expanded(
-                  flex: 8,
+                  flex: 7,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      Text('Grupo: ${product.group}'),
                       Text('Precio de venta: ${product.price.toString()}'),
+                      Text(
+                        product.costType == CostType.purchase
+                            ? 'Precio de compra: ${product.cost.toString()}'
+                            : 'Precio unitario: ${(product.cost / product.stock).round().toString()}'
+                      ),
                       Text('Cantidad disponible: ${product.stock.toString()}'),
                     ],
                   ),
                 ),
                 Expanded(
-                  flex: 2,
+                  flex: 3,
                   child: lotMode
-                      ? IconButton(
-                          icon: Icon(Icons.edit),
-                          onPressed: () {
-                            showDialog<ProductDraft>(
-                              context: context,
-                              barrierDismissible: false,
-                              builder: (context) {
-                                return ProductFormWidget(
-                                  initialProduct: product,
-                                  editMode: true,
+                      ? Column(
+                          children: [
+                            IconButton(
+                              icon: Icon(Icons.edit),
+                              onPressed: () async {
+                                final newProduct =
+                                    await showDialog<ProductDraft>(
+                                      context: context,
+                                      barrierDismissible: false,
+                                      builder: (_) => ProductFormWidget(
+                                        initialProduct: product,
+                                      ),
+                                    );
+                                if (newProduct != null) {
+                                  context.read<ProductDraftProvider>().update(
+                                    product,
+                                    newProduct,
+                                  );
+                                }
+                              },
+                            ),
+                            IconButton(
+                              icon: Icon(Icons.delete),
+                              onPressed: () async {
+                                showDialog(
+                                  context: context,
+                                  barrierDismissible: false,
+                                  builder: (_) => AlertDialog(
+                                    title: Text('Borrar'),
+                                    content: Text(
+                                      'Desea borrar este producto?',
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                        child: Text('Cancelar'),
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                        },
+                                      ),
+                                      ElevatedButton(
+                                        child: Text('Aceptar'),
+                                        onPressed: () {
+                                          context
+                                              .read<ProductDraftProvider>()
+                                              .remove(product);
+                                          Navigator.pop(context);
+                                        },
+                                      ),
+                                    ],
+                                  ),
                                 );
                               },
-                            );
-                          },
+                            ),
+                          ],
                         )
                       : Icon(Icons.warning, color: Colors.orange),
                 ),

@@ -23,7 +23,7 @@ class WorkdayProvider extends ChangeNotifier {
 
   Future<void> startWorkday({required String businessId}) async {
     final workday = WorkdayModel(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      id: DateTime.now().microsecondsSinceEpoch.toString(),
       businessId: businessId,
       startTime: DateTime.now(),
     );

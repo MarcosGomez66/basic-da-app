@@ -19,28 +19,34 @@ class LotModelAdapter extends TypeAdapter<LotModel> {
     return LotModel(
       id: fields[0] as String,
       businessId: fields[1] as String,
-      budget: fields[2] as double?,
-      isActive: fields[3] as bool,
-      uploaded: fields[4] as DateTime,
-      ended: fields[5] as DateTime?,
+      totalPrice: fields[2] as double,
+      totalCost: fields[3] as double,
+      totalProducts: fields[4] as int,
+      isActive: fields[5] as bool,
+      uploaded: fields[6] as DateTime,
+      ended: fields[7] as DateTime?,
     );
   }
 
   @override
   void write(BinaryWriter writer, LotModel obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(8)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
       ..write(obj.businessId)
       ..writeByte(2)
-      ..write(obj.budget)
+      ..write(obj.totalPrice)
       ..writeByte(3)
-      ..write(obj.isActive)
+      ..write(obj.totalCost)
       ..writeByte(4)
-      ..write(obj.uploaded)
+      ..write(obj.totalProducts)
       ..writeByte(5)
+      ..write(obj.isActive)
+      ..writeByte(6)
+      ..write(obj.uploaded)
+      ..writeByte(7)
       ..write(obj.ended);
   }
 

@@ -113,7 +113,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                           onTap: () {
                             context.read<BusinessProvider>().selectBusiness(business);
 
-                            Navigator.pushNamed(
+                            Navigator.pushReplacementNamed(
                               context,
                               '/home'
                             );

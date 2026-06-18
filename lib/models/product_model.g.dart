@@ -22,20 +22,21 @@ class ProductModelAdapter extends TypeAdapter<ProductModel> {
       lotId: fields[2] as String,
       name: fields[3] as String,
       group: fields[4] as String,
-      cost: fields[5] as double,
-      price: fields[6] as double,
-      stock: fields[7] as double,
-      minStock: fields[8] as double,
-      isActive: fields[9] as bool,
-      uploaded: fields[10] as DateTime,
-      ended: fields[11] as DateTime?,
+      price: fields[5] as double,
+      costType: fields[6] as CostType,
+      cost: fields[7] as double,
+      stock: fields[8] as double,
+      minStock: fields[9] as double,
+      isActive: fields[10] as bool,
+      uploaded: fields[11] as DateTime,
+      ended: fields[12] as DateTime?,
     );
   }
 
   @override
   void write(BinaryWriter writer, ProductModel obj) {
     writer
-      ..writeByte(12)
+      ..writeByte(13)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -47,18 +48,20 @@ class ProductModelAdapter extends TypeAdapter<ProductModel> {
       ..writeByte(4)
       ..write(obj.group)
       ..writeByte(5)
-      ..write(obj.cost)
-      ..writeByte(6)
       ..write(obj.price)
+      ..writeByte(6)
+      ..write(obj.costType)
       ..writeByte(7)
-      ..write(obj.stock)
+      ..write(obj.cost)
       ..writeByte(8)
-      ..write(obj.minStock)
+      ..write(obj.stock)
       ..writeByte(9)
-      ..write(obj.isActive)
+      ..write(obj.minStock)
       ..writeByte(10)
-      ..write(obj.uploaded)
+      ..write(obj.isActive)
       ..writeByte(11)
+      ..write(obj.uploaded)
+      ..writeByte(12)
       ..write(obj.ended);
   }
 
