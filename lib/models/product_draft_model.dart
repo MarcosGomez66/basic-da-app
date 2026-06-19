@@ -1,6 +1,6 @@
 import 'package:hive/hive.dart';
+import 'package:basic_da_app/app/helpers.dart';
 
-enum CostType { purchase, budget }
 
 enum CardType { show, edit }
 
@@ -33,13 +33,20 @@ class CostTypeAdapter extends TypeAdapter<CostType> {
   }
 }
 
-class ProductDraft {
+class ProductDraft implements ProductBase {
+  @override
   final String name;
+  @override
   final String group;
+  @override
   final double price; //precio de venta
+  @override
   final CostType costType;
+  @override
   final double cost; //precio de compra o presupuesto
+  @override
   final double stock;
+  @override
   final double minStock;
 
   const ProductDraft({

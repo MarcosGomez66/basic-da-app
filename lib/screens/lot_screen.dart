@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:basic_da_app/app/helpers.dart';
 
 //providers
 import 'package:basic_da_app/providers/product_draft_provider.dart';
@@ -11,6 +12,7 @@ import 'package:basic_da_app/widgets/product_form_widget.dart';
 import 'package:basic_da_app/widgets/product_card_widget.dart';
 
 //models
+import 'package:basic_da_app/models/product_model.dart';
 import 'package:basic_da_app/models/product_draft_model.dart';
 import 'package:basic_da_app/models/lot_model.dart';
 
@@ -62,32 +64,9 @@ class LotScreen extends StatelessWidget {
     Navigator.pop(context);
   }
 
-  //helpers para registrar lote y productos
-  double _totalPrice(List<ProductDraft> products) {
-    double total = 0.0;
-    for (final p in products) {
-      final subTotal = p.price * p.stock;
-      total += subTotal;
-    }
-    return total;
-  }
-
-  double _totalCost(List<ProductDraft> products) {
-    double total = 0.0;
-    for (final p in products) {
-      if (p.costType == CostType.purchase) {
-        final subTotal = p.cost * p.stock;
-        total += subTotal;
-      } else {
-        total += p.cost;
-      }
-    }
-    return total;
-  }
-
   @override
   Widget build(BuildContext context) {
-    final mode = ModalRoute.of(context)!.settings.arguments as String;
+    final args = ModalRoute.of(context)!.settings.arguments as LotModel?;
     final products = context.watch<ProductDraftProvider>().products;
     final businessId = context.watch<BusinessProvider>().selectedBusiness!.id;
 
@@ -99,7 +78,7 @@ class LotScreen extends StatelessWidget {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: mode == 'new' ? Text('Nuevo lote') : Text('Editar lote'),
+          title: args == null ? Text('Nuevo lote') : Text('Editar lote'),
           backgroundColor: Colors.blueAccent,
           leading: IconButton(
             icon: Icon(Icons.arrow_back),
@@ -119,25 +98,29 @@ class LotScreen extends StatelessWidget {
             children: [
               //titulo
               Text(
-                'Lote: ${DateTime.now().toString()}',
+                args != null
+                    ? 'Lote: ${formatDate(args.uploaded)}'
+                    : 'Lote: ${formatDate(DateTime.now())}',
                 style: TextStyle(fontSize: 15),
               ),
               //boton para agregar producto
-              ElevatedButton.icon(
-                onPressed: () async {
-                  final product = await showDialog<ProductDraft>(
-                    barrierDismissible: false,
-                    context: context,
-                    builder: (_) => const ProductFormWidget(),
-                  );
+              args != null
+                  ? SizedBox(height: 5)
+                  : ElevatedButton.icon(
+                      onPressed: () async {
+                        final product = await showDialog<ProductDraft>(
+                          barrierDismissible: false,
+                          context: context,
+                          builder: (_) => const ProductFormWidget(),
+                        );
 
-                  if (product != null) {
-                    context.read<ProductDraftProvider>().add(product);
-                  }
-                },
-                label: Text('Agregar producto'),
-                icon: const Icon(Icons.add),
-              ),
+                        if (product != null) {
+                          context.read<ProductDraftProvider>().add(product);
+                        }
+                      },
+                      label: Text('Agregar producto'),
+                      icon: const Icon(Icons.add),
+                    ),
               //lista de productos agregados
               Expanded(
                 child: products.isEmpty
@@ -145,10 +128,7 @@ class LotScreen extends StatelessWidget {
                     : ListView.builder(
                         itemCount: products.length,
                         itemBuilder: (context, index) {
-                          final List<ProductDraft> productsReversed = products
-                              .reversed
-                              .toList();
-                          final ProductDraft product = productsReversed[index];
+                          final ProductDraft product = products[index];
 
                           return ProductCardWidget(
                             product: product,
@@ -156,6 +136,17 @@ class LotScreen extends StatelessWidget {
                           );
                         },
                       ),
+              ),
+              //totales
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text('Precio total de venta: ${totalPrice(products)}'),
+                  Text('Precio total de compra: ${totalCost(products)}'),
+                  Text(
+                    'Ganancia esperada: ${(totalPrice(products) - totalCost(products)).toString()}',
+                  ),
+                ],
               ),
             ],
           ),
@@ -169,52 +160,16 @@ class LotScreen extends StatelessWidget {
                 child: ElevatedButton(
                   child: Text('Limpiar'),
                   onPressed: products.isEmpty
-                    ? null
-                    : () async {
-                    final result = await showDialog(
-                      context: context,
-                      barrierDismissible: false,
-                      builder: (_) => AlertDialog(
-                        title: Text('Limpiar'),
-                        content: Text(
-                          'Se borrara todo el contenido no registrado, desea continuar?',
-                        ),
-                        actions: [
-                          TextButton(
-                            child: Text('Cancelar'),
-                            onPressed: () {
-                              Navigator.pop(context, false);
-                            },
-                          ),
-                          ElevatedButton(
-                            child: Text('Aceptar'),
-                            onPressed: () {
-                              Navigator.pop(context, true);
-                            },
-                          ),
-                        ],
-                      ),
-                    );
-                    if (result == true) {
-                      context.read<ProductDraftProvider>().clear();
-                    }
-                  },
-                ),
-              ),
-              Expanded(
-                child: Consumer<ProductProvider>(
-                  builder: (context, productProvider, child) {
-                    return ElevatedButton(
-                      child: Text('Registrar'),
-                      onPressed: products.isEmpty
-                          ? null
-                          : () async {
-                        final result = await showDialog(
+                      ? null
+                      : () async {
+                          final result = await showDialog(
                             context: context,
                             barrierDismissible: false,
                             builder: (_) => AlertDialog(
-                              title: Text('Registrar'),
-                              content: Text('Se registraran los productos de forma permanente, desea continuar?'),
+                              title: Text('Limpiar'),
+                              content: Text(
+                                'Se borrara todo el contenido no registrado, desea continuar?',
+                              ),
                               actions: [
                                 TextButton(
                                   child: Text('Cancelar'),
@@ -227,32 +182,74 @@ class LotScreen extends StatelessWidget {
                                   onPressed: () {
                                     Navigator.pop(context, true);
                                   },
-                                )
+                                ),
                               ],
-                            )
-                        );
-                        if (result == true) {
-                          //crear lote
-                          final newLot = LotModel(
-                            id: DateTime.now().microsecondsSinceEpoch.toString(),
-                            businessId: businessId,
-                            totalPrice: _totalPrice(products),
-                            totalCost: _totalCost(products),
-                            totalProducts: products.length,
-                            uploaded: DateTime.now(),
+                            ),
                           );
-                          await productProvider.createLot(newLot);
-                          //subir productos
-                          final newProducts = productProvider.createProducts(products, businessId);
-                          await productProvider.uploadProducts(newProducts);
-                          productProvider.clearCurrentLot();
-                          context.read<ProductDraftProvider>().clear();
-                          Navigator.pop(context);
-                        }
-                      },
+                          if (result == true) {
+                            context.read<ProductDraftProvider>().clear();
+                          }
+                        },
+                ),
+              ),
+              Expanded(
+                child: Consumer<ProductProvider>(
+                  builder: (context, productProvider, child) {
+                    return ElevatedButton(
+                      child: Text('Registrar'),
+                      onPressed: products.isEmpty
+                          ? null
+                          : () async {
+                              final result = await showDialog(
+                                context: context,
+                                barrierDismissible: false,
+                                builder: (_) => AlertDialog(
+                                  title: Text('Registrar'),
+                                  content: Text(
+                                    'Se registraran los productos de forma permanente, desea continuar?',
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      child: Text('Cancelar'),
+                                      onPressed: () {
+                                        Navigator.pop(context, false);
+                                      },
+                                    ),
+                                    ElevatedButton(
+                                      child: Text('Aceptar'),
+                                      onPressed: () {
+                                        Navigator.pop(context, true);
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              );
+                              if (result == true) {
+                                //crear lote
+                                final newLot = LotModel(
+                                  id: DateTime.now().microsecondsSinceEpoch
+                                      .toString(),
+                                  businessId: businessId,
+                                  totalPrice: totalPrice(products),
+                                  totalCost: totalCost(products),
+                                  totalProducts: products.length,
+                                  uploaded: DateTime.now(),
+                                );
+                                await productProvider.createLot(newLot);
+                                //subir productos
+                                final newProducts = productProvider
+                                    .createProducts(products, businessId);
+                                await productProvider.uploadProducts(
+                                  newProducts,
+                                );
+                                productProvider.clearCurrentLot();
+                                context.read<ProductDraftProvider>().clear();
+                                Navigator.pop(context);
+                              }
+                            },
                     );
                   },
-                )
+                ),
               ),
             ],
           ),

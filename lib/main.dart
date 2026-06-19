@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/date_symbol_data_local.dart';
+
 //models and app
 import 'package:basic_da_app/app/app.dart';
 import 'package:basic_da_app/models/business_model.dart';
@@ -18,6 +20,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await Hive.initFlutter();
+  await initializeDateFormatting('es');
 
   Hive.registerAdapter(BusinessModelAdapter());
   Hive.registerAdapter(WorkdayModelAdapter());
