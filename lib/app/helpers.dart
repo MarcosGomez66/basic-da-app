@@ -8,7 +8,7 @@ import 'package:basic_da_app/models/product_model.dart';
 enum CostType { purchase, budget }
 
 //helpers para registrar lote y productos
-double totalPrice(List<ProductDraft> products) {
+double totalPrice(List products) {
   double total = 0.0;
   for (final p in products) {
     final subTotal = p.price * p.stock;
@@ -17,7 +17,7 @@ double totalPrice(List<ProductDraft> products) {
   return total;
 }
 
-double totalCost(List<ProductDraft> products) {
+double totalCost(List products) {
   double total = 0.0;
   for (final p in products) {
     if (p.costType == CostType.purchase) {
@@ -33,15 +33,4 @@ double totalCost(List<ProductDraft> products) {
 //helper para mostrar fecha perzonalizada
 String formatDate(DateTime date) {
   return DateFormat('dd/MMM/yyyy HH:mm').format(date);
-}
-
-//helper para usar product_card_widget correctamente
-abstract class ProductBase {
-  String get name;
-  String get group;
-  double get price;
-  CostType get costType;
-  double get cost;
-  double get stock;
-  double get minStock;
 }

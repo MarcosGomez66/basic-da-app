@@ -16,8 +16,8 @@ import 'package:basic_da_app/models/product_model.dart';
 import 'package:basic_da_app/models/product_draft_model.dart';
 import 'package:basic_da_app/models/lot_model.dart';
 
-class LotScreen extends StatelessWidget {
-  const LotScreen({super.key});
+class NewLotScreen extends StatelessWidget {
+  const NewLotScreen({super.key});
 
   Future<bool> _confirmDiscardDraft(BuildContext context) async {
     final result = await showDialog<bool>(
@@ -66,9 +66,14 @@ class LotScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final args = ModalRoute.of(context)!.settings.arguments as LotModel?;
-    final products = context.watch<ProductDraftProvider>().products;
-    final businessId = context.watch<BusinessProvider>().selectedBusiness!.id;
+    final List<ProductDraft> products = context
+        .watch<ProductDraftProvider>()
+        .products;
+    final String businessId = context
+        .watch<BusinessProvider>()
+        .selectedBusiness!
+        .id;
+    final String now = formatDate(DateTime.now());
 
     return PopScope(
       canPop: false,
@@ -78,7 +83,7 @@ class LotScreen extends StatelessWidget {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: args == null ? Text('Nuevo lote') : Text('Editar lote'),
+          title: Text('Nuevo lote'),
           backgroundColor: Colors.blueAccent,
           leading: IconButton(
             icon: Icon(Icons.arrow_back),
@@ -97,30 +102,23 @@ class LotScreen extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               //titulo
-              Text(
-                args != null
-                    ? 'Lote: ${formatDate(args.uploaded)}'
-                    : 'Lote: ${formatDate(DateTime.now())}',
-                style: TextStyle(fontSize: 15),
-              ),
+              Text('Lote: $now'),
               //boton para agregar producto
-              args != null
-                  ? SizedBox(height: 5)
-                  : ElevatedButton.icon(
-                      onPressed: () async {
-                        final product = await showDialog<ProductDraft>(
-                          barrierDismissible: false,
-                          context: context,
-                          builder: (_) => const ProductFormWidget(),
-                        );
+              ElevatedButton.icon(
+                onPressed: () async {
+                  final product = await showDialog<ProductDraft>(
+                    barrierDismissible: false,
+                    context: context,
+                    builder: (_) => const ProductFormWidget(),
+                  );
 
-                        if (product != null) {
-                          context.read<ProductDraftProvider>().add(product);
-                        }
-                      },
-                      label: Text('Agregar producto'),
-                      icon: const Icon(Icons.add),
-                    ),
+                  if (product != null) {
+                    context.read<ProductDraftProvider>().add(product);
+                  }
+                },
+                label: Text('Agregar producto'),
+                icon: const Icon(Icons.add),
+              ),
               //lista de productos agregados
               Expanded(
                 child: products.isEmpty
@@ -130,9 +128,8 @@ class LotScreen extends StatelessWidget {
                         itemBuilder: (context, index) {
                           final ProductDraft product = products[index];
 
-                          return ProductCardWidget(
+                          return ProductDraftCardWidget(
                             product: product,
-                            lotMode: true,
                           );
                         },
                       ),

@@ -4,7 +4,7 @@ import 'package:basic_da_app/app/helpers.dart';
 part 'product_model.g.dart';
 
 @HiveType(typeId: 3)
-class ProductModel extends HiveObject implements ProductBase {
+class ProductModel extends HiveObject{
   @HiveField(0)
   final String id;
 
@@ -15,31 +15,24 @@ class ProductModel extends HiveObject implements ProductBase {
   final String lotId;
 
   @HiveField(3)
-  @override
   final String name;
 
   @HiveField(4)
-  @override
   final String group;
 
   @HiveField(5)
-  @override
   final double price; //precio de compra
 
   @HiveField(6)
-  @override
   final CostType costType;
 
   @HiveField(7)
-  @override
   final double cost; // precio de venta, en caso de presupuesto guardar siempre el dato real y solo hacer la division al mostrar
 
   @HiveField(8)
-  @override
   final double stock; //cantidad
 
   @HiveField(9)
-  @override
   final double minStock;
 
   @HiveField(10)

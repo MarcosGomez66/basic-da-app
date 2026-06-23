@@ -25,7 +25,7 @@ class StockScreen extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.add),
             onPressed: () {
-              Navigator.pushNamed(context, '/lot', arguments: null);
+              Navigator.pushNamed(context, '/new_lot');
             },
           ),
         ],
@@ -60,7 +60,7 @@ class StockScreen extends StatelessWidget {
                         onPressed: () {
                           Navigator.pushNamed(
                             context,
-                            '/lot',
+                            '/edit_lot',
                             arguments: lots[index]
                           );
                         },

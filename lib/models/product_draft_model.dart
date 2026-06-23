@@ -33,20 +33,13 @@ class CostTypeAdapter extends TypeAdapter<CostType> {
   }
 }
 
-class ProductDraft implements ProductBase {
-  @override
+class ProductDraft{
   final String name;
-  @override
   final String group;
-  @override
   final double price; //precio de venta
-  @override
   final CostType costType;
-  @override
   final double cost; //precio de compra o presupuesto
-  @override
   final double stock;
-  @override
   final double minStock;
 
   const ProductDraft({
