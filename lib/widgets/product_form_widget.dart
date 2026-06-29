@@ -189,30 +189,3 @@ class _ProductFormWidgetState extends State<ProductFormWidget> {
     );
   }
 }
-
-//helpers
-class StringValidator {
-  static String? required(String? value) {
-    if (value == null || value.trim().isEmpty) {
-      return 'Campo obligatorio';
-    }
-    return null;
-  }
-}
-
-class NumberValidator {
-  static String? required(String? value) {
-    if (value == null || value.trim().isEmpty) {
-      return 'Campo obligatorio';
-    }
-
-    final number = double.tryParse(value);
-    if (number == null) {
-      return 'Ingrese una cantidad valida';
-    }
-    if (number <= 0) {
-      return 'Debe ser mayot a 0';
-    }
-    return null;
-  }
-}

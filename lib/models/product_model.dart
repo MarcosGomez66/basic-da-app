@@ -15,10 +15,10 @@ class ProductModel extends HiveObject{
   final String lotId;
 
   @HiveField(3)
-  final String name;
+  String name;
 
   @HiveField(4)
-  final String group;
+  String group;
 
   @HiveField(5)
   final double price; //precio de compra
@@ -30,10 +30,10 @@ class ProductModel extends HiveObject{
   final double cost; // precio de venta, en caso de presupuesto guardar siempre el dato real y solo hacer la division al mostrar
 
   @HiveField(8)
-  final double stock; //cantidad
+  double stock; //cantidad
 
   @HiveField(9)
-  final double minStock;
+  double minStock;
 
   @HiveField(10)
   bool isActive;

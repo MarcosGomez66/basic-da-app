@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+
 //models
 import 'package:basic_da_app/models/product_draft_model.dart';
 import 'package:basic_da_app/models/product_model.dart';
@@ -7,6 +8,7 @@ import 'package:basic_da_app/models/lot_model.dart';
 
 class ProductProvider extends ChangeNotifier {
   LotModel? _currentLot;
+
   LotModel? get currentLot => _currentLot;
 
   final Box<LotModel> _lotBox = Hive.box<LotModel>('lots');
@@ -32,12 +34,17 @@ class ProductProvider extends ChangeNotifier {
   }
 
   List<LotModel> getLotByBusiness(String businessId) {
-    return _lotBox.values.where((lot) => lot.businessId == businessId && lot.isActive).toList()
-        ..sort((a, b) => b.uploaded.compareTo(a.uploaded));
+    return _lotBox.values
+        .where((lot) => lot.businessId == businessId && lot.isActive)
+        .toList()
+      ..sort((a, b) => b.uploaded.compareTo(a.uploaded));
   }
 
   //productos
-  List<ProductModel> createProducts(List<ProductDraft> products, String businessId) {
+  List<ProductModel> createProducts(
+    List<ProductDraft> products,
+    String businessId,
+  ) {
     final List<ProductModel> productList = [];
     for (final p in products) {
       final newProduct = ProductModel(
@@ -65,9 +72,26 @@ class ProductProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> updateProduct(ProductModel product) async {
+  Future<void> updateProduct({
+    required ProductModel product,
+    required String newName,
+    required String newGroup,
+    required double newMin,
+  }) async {
+    product.name = newName;
+    product.group = newGroup;
     await product.save();
     notifyListeners();
+  }
+
+  Future<void> subtractProduct({required ProductModel product, required double subtrahend}) async {
+    product.stock -= subtrahend;
+    if (product.stock == 0.0) {
+      await deactivateProduct(product);
+    } else {
+      await product.save();
+      notifyListeners();
+    }
   }
 
   Future<void> deactivateProduct(ProductModel product) async {
@@ -78,10 +102,14 @@ class ProductProvider extends ChangeNotifier {
   }
 
   List<ProductModel> getProductsByBusiness(String businessId) {
-    return _productBox.values.where((p) => p.businessId == businessId && p.isActive).toList();
+    return _productBox.values
+        .where((p) => p.businessId == businessId && p.isActive)
+        .toList();
   }
 
   List<ProductModel> getProductsByLot(String lotId) {
-    return _productBox.values.where((p) => p.lotId == lotId && p.isActive).toList();
+    return _productBox.values
+        .where((p) => p.lotId == lotId && p.isActive)
+        .toList();
   }
 }

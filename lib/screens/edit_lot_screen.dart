@@ -3,17 +3,14 @@ import 'package:provider/provider.dart';
 import 'package:basic_da_app/app/helpers.dart';
 
 //providers
-import 'package:basic_da_app/providers/product_draft_provider.dart';
 import 'package:basic_da_app/providers/product_provider.dart';
 import 'package:basic_da_app/providers/business_provider.dart';
 
 //widgets
-import 'package:basic_da_app/widgets/product_form_widget.dart';
 import 'package:basic_da_app/widgets/product_card_widget.dart';
 
 //models
 import 'package:basic_da_app/models/product_model.dart';
-import 'package:basic_da_app/models/product_draft_model.dart';
 import 'package:basic_da_app/models/lot_model.dart';
 
 class EditLotScreen extends StatelessWidget {

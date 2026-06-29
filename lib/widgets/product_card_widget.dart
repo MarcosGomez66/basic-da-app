@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:basic_da_app/app/helpers.dart';
@@ -8,6 +9,7 @@ import 'package:basic_da_app/models/product_model.dart';
 
 // providers
 import 'package:basic_da_app/providers/product_draft_provider.dart';
+import 'package:basic_da_app/providers/product_provider.dart';
 
 // widgets
 import 'package:basic_da_app/widgets/product_form_widget.dart';
@@ -111,13 +113,8 @@ class ProductDraftCardWidget extends StatelessWidget {
 
 class ProductCardWidget extends StatelessWidget {
   final ProductModel product;
-  final bool lotMode;
 
-  const ProductCardWidget({
-    super.key,
-    required this.product,
-    this.lotMode = false,
-  });
+  const ProductCardWidget({super.key, required this.product});
 
   @override
   Widget build(BuildContext context) {
@@ -133,7 +130,7 @@ class ProductCardWidget extends StatelessWidget {
             Row(
               children: [
                 Expanded(
-                  flex: 7,
+                  flex: 8,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -149,19 +146,141 @@ class ProductCardWidget extends StatelessWidget {
                   ),
                 ),
                 Expanded(
-                  flex: 3,
+                  flex: 2,
                   child: Column(
                     children: [
                       IconButton(
                         icon: Icon(Icons.edit),
                         onPressed: () async {
-                          //ajustar nombre y grupo
+                          final nameController = TextEditingController(
+                            text: product.name,
+                          );
+                          final groupController = TextEditingController(
+                            text: product.group,
+                          );
+                          final minStockController = TextEditingController(
+                            text: product.minStock.toString(),
+                          );
+
+                          final formKey = GlobalKey<FormState>();
+
+                          final bool result = await showDialog(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (_) => AlertDialog(
+                              title: Text('Modificar'),
+                              content: Form(
+                                key: formKey,
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    TextFormField(
+                                      controller: nameController,
+                                      maxLength: 25,
+                                      decoration: InputDecoration(
+                                        labelText: 'Nombre del producto',
+                                      ),
+                                      validator: StringValidator.required,
+                                    ),
+                                    TextFormField(
+                                      controller: groupController,
+                                      maxLength: 25,
+                                      decoration: InputDecoration(
+                                        labelText: 'Grupo',
+                                      ),
+                                      validator: StringValidator.required,
+                                    ),
+                                    TextFormField(
+                                      controller: minStockController,
+                                      keyboardType: TextInputType.number,
+                                      inputFormatters: [
+                                        FilteringTextInputFormatter.digitsOnly,
+                                        LengthLimitingTextInputFormatter(4),
+                                      ],
+                                      decoration: InputDecoration(labelText: 'Cantidad minima'),
+                                      validator: NumberValidator.required,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              actions: [
+                                TextButton(
+                                  child: Text('Cancelar'),
+                                  onPressed: () {
+                                    Navigator.pop(context, false);
+                                  },
+                                ),
+                                ElevatedButton(
+                                  child: Text('Guardar'),
+                                  onPressed: () {
+                                    if (!formKey.currentState!.validate()) {
+                                      return;
+                                    }
+                                    Navigator.pop(context, true);
+                                  },
+                                ),
+                              ],
+                            ),
+                          );
+                          if (result == true) {
+                            await context.read<ProductProvider>().updateProduct(
+                              product: product,
+                              newName: nameController.text,
+                              newGroup: groupController.text,
+                              newMin: double.parse(minStockController.text),
+                            );
+                          }
                         },
                       ),
                       IconButton(
                         icon: Icon(Icons.block),
                         onPressed: () async {
-                          //merma
+                          final controller = TextEditingController(
+                            text: product.stock.toString(),
+                          );
+                          final key = GlobalKey<FormState>();
+                          double? subtrahend;
+                          final result = await showDialog(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (_) => AlertDialog(
+                              title: Text('Merma'),
+                              content: Form(
+                                key: key,
+                                child: TextFormField(
+                                  controller: controller,
+                                  keyboardType: TextInputType.number,
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.digitsOnly,
+                                    LengthLimitingTextInputFormatter(4),
+                                  ],
+                                  decoration: InputDecoration(labelText: 'Cantidad a descartar'),
+                                  validator: SubtractionValidator.max(product.stock),
+                                ),
+                              ),
+                              actions: [
+                                TextButton(
+                                  child: Text('Cancelar'),
+                                  onPressed: () {
+                                    Navigator.pop(context, false);
+                                  },
+                                ),
+                                ElevatedButton(
+                                  child: Text('Aceptar'),
+                                  onPressed: () {
+                                    if (!key.currentState!.validate()) {
+                                      return;
+                                    }
+                                    subtrahend = double.tryParse(controller.text);
+                                    Navigator.pop(context, true);
+                                  },
+                                )
+                              ],
+                            ),
+                          );
+                          if (result == true) {
+                            await context.read<ProductProvider>().subtractProduct(product: product, subtrahend: subtrahend!);
+                          }
                         },
                       ),
                     ],
