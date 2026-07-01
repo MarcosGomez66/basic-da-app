@@ -102,7 +102,7 @@ class NewLotScreen extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               //titulo
-              Text('Lote: $now'),
+              Text('Lote: $now', style: TextStyle(fontSize: 20),),
               //boton para agregar producto
               ElevatedButton.icon(
                 onPressed: () async {

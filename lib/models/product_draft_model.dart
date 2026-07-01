@@ -1,12 +1,11 @@
 import 'package:hive/hive.dart';
 import 'package:basic_da_app/app/helpers.dart';
 
-
 enum CardType { show, edit }
 
 class CostTypeAdapter extends TypeAdapter<CostType> {
   @override
-  final int typeId = 4;
+  final int typeId = 6;
 
   @override
   CostType read(BinaryReader reader) {

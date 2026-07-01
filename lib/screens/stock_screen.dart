@@ -50,7 +50,7 @@ class StockScreen extends StatelessWidget {
                       flex: 8,
                       child: Text(
                         'Lote: ${formatDate(lots[index].uploaded)}',
-                        style: TextStyle(fontSize: 15),
+                        style: TextStyle(fontSize: 20),
                       ),
                     ),
                     Expanded(
@@ -68,6 +68,12 @@ class StockScreen extends StatelessWidget {
                     )
                   ],
                 ),
+                Text('Precio total de venta: ${lots[index].totalPrice.toString()}'),
+                Text('Precio total de compra: ${lots[index].totalCost.toString()}'),
+                Text(
+                  'Ganancia esperada: ${(lots[index].totalPrice - lots[index].totalCost).toString()}',
+                ),
+                Text('Total de articulos: ${lots[index].totalProducts}')
               ],
             ),
           );

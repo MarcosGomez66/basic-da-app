@@ -44,7 +44,7 @@ class EditLotScreen extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             //titulo
-            Text('Lote: ${formatDate(arg.uploaded)}'),
+            Text('Lote: ${formatDate(arg.uploaded)}', style: TextStyle(fontSize: 20),),
             //boton para agregar producto
             SizedBox(height: 5),
             //lista de productos agregados
@@ -64,10 +64,10 @@ class EditLotScreen extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Text('Precio total de venta: ${totalPrice(products)}'),
-                Text('Precio total de compra: ${totalCost(products)}'),
+                Text('Precio total de venta: ${arg.totalPrice.toString()}'),
+                Text('Precio total de compra: ${arg.totalCost.toString()}'),
                 Text(
-                  'Ganancia esperada: ${(totalPrice(products) - totalCost(products)).toString()}',
+                  'Ganancia esperada: ${(arg.totalPrice - arg.totalCost).toString()}',
                 ),
               ],
             ),
