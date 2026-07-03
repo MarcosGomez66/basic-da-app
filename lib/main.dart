@@ -10,6 +10,8 @@ import 'package:basic_da_app/models/product_model.dart';
 import 'package:basic_da_app/models/product_draft_model.dart';
 import 'package:basic_da_app/models/lot_model.dart';
 import 'package:basic_da_app/models/workday_model.dart';
+import 'package:basic_da_app/models/sale_model.dart';
+
 //providers
 import 'package:basic_da_app/providers/business_provider.dart';
 import 'package:basic_da_app/providers/workday_provider.dart';
@@ -27,6 +29,7 @@ void main() async {
   Hive.registerAdapter(LotModelAdapter());
   Hive.registerAdapter(CostTypeAdapter());
   Hive.registerAdapter(ProductModelAdapter());
+  Hive.registerAdapter(SaleModelAdapter());
 
   await Hive.openBox<BusinessModel>('businesses');
   await Hive.openBox<WorkdayModel>('workdays');

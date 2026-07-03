@@ -1,4 +1,3 @@
-import 'package:basic_da_app/widgets/detalles.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 //providers
@@ -27,11 +26,7 @@ class SummaryScreen extends StatelessWidget {
                   businessId: businessId,
                   currentWorkday: workdayProvider.currentWorkday,
                 ),
-                //detalles temporal
-                Detalles(
-                  businessId: businessId,
-                  workday: workdayProvider.currentWorkday,
-                )
+
               ],
             );
           },

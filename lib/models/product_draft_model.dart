@@ -5,7 +5,7 @@ enum CardType { show, edit }
 
 class CostTypeAdapter extends TypeAdapter<CostType> {
   @override
-  final int typeId = 6;
+  final int typeId = 5;
 
   @override
   CostType read(BinaryReader reader) {
