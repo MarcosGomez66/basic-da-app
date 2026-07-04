@@ -60,6 +60,7 @@ simple de visualización de datos.
 - Permitir autocompletar formularios con el widget Autocomplete en los campos de nombre y grupo.
 - Solo puede existir una jornada abierta por negocio.
 - Cada producto pertenece a un negocio y a un lote.
+- Los ids se generan con DateTime.now().microsecondsSinceEpoch()
 
 ## Arquitectura
 
