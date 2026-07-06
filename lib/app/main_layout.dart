@@ -38,16 +38,13 @@ class _MainLayoutState extends State<MainLayout> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: IndexedStack(
-        index: currentIndex,
-        children: screens,
-      ),
+      body: IndexedStack(index: currentIndex, children: screens),
       //boton central para vender
       floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.point_of_sale, color: Colors.white,),
+        child: const Icon(Icons.point_of_sale, color: Colors.white),
         onPressed: () {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: const Text('Proximamente: Formulario de venta'),)
+            SnackBar(content: const Text('Proximamente: Formulario de venta')),
           );
         },
       ),
@@ -66,7 +63,7 @@ class _MainLayoutState extends State<MainLayout> {
               ),
               onPressed: () => setState(() => currentIndex = 0),
             ),
-            const SizedBox(width: 10,),
+            const SizedBox(width: 10),
             IconButton(
               icon: Icon(
                 Icons.dashboard,
@@ -74,7 +71,7 @@ class _MainLayoutState extends State<MainLayout> {
               ),
               onPressed: () => setState(() => currentIndex = 1),
             ),
-            const SizedBox(width: 20,),
+            const SizedBox(width: 20),
             IconButton(
               icon: Icon(
                 Icons.inventory,
@@ -82,7 +79,7 @@ class _MainLayoutState extends State<MainLayout> {
               ),
               onPressed: () => setState(() => currentIndex = 2),
             ),
-            const SizedBox(width: 10,),
+            const SizedBox(width: 10),
             IconButton(
               icon: Icon(
                 Icons.settings,

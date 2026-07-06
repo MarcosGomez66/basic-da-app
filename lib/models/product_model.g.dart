@@ -28,8 +28,8 @@ class ProductModelAdapter extends TypeAdapter<ProductModel> {
       stock: fields[8] as double,
       minStock: fields[9] as double,
       isActive: fields[10] as bool,
-      uploaded: fields[11] as DateTime,
-      ended: fields[12] as DateTime?,
+      uploadedAt: fields[11] as DateTime,
+      endedAt: fields[12] as DateTime?,
     );
   }
 
@@ -60,9 +60,9 @@ class ProductModelAdapter extends TypeAdapter<ProductModel> {
       ..writeByte(10)
       ..write(obj.isActive)
       ..writeByte(11)
-      ..write(obj.uploaded)
+      ..write(obj.uploadedAt)
       ..writeByte(12)
-      ..write(obj.ended);
+      ..write(obj.endedAt);
   }
 
   @override

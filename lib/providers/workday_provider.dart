@@ -22,6 +22,9 @@ class WorkdayProvider extends ChangeNotifier {
   }
 
   Future<void> startWorkday({required String businessId}) async {
+    loadCurrentWorkday(businessId);
+    if (currentWorkday != null) return;
+
     final workday = WorkdayModel(
       id: DateTime.now().microsecondsSinceEpoch.toString(),
       businessId: businessId,
@@ -36,7 +39,9 @@ class WorkdayProvider extends ChangeNotifier {
   Future<void> endWorkday() async {
     if (currentWorkday == null) return;
 
-    currentWorkday!..endTime = DateTime.now()..isOpen = false;
+    currentWorkday!
+      ..endTime = DateTime.now()
+      ..isOpen = false;
 
     await currentWorkday!.save();
     currentWorkday = null;
@@ -44,12 +49,10 @@ class WorkdayProvider extends ChangeNotifier {
   }
 
   List<WorkdayModel> getWorkdays(String businessId) {
-    final workdays = workdayBox.values.where(
-        (e) => e.businessId == businessId
-    ).toList();
-    workdays.sort(
-        (a, b) => b.startTime.compareTo(a.startTime)
-    );
+    final workdays = workdayBox.values
+        .where((e) => e.businessId == businessId)
+        .toList();
+    workdays.sort((a, b) => b.startTime.compareTo(a.startTime));
     return workdays;
   }
 }

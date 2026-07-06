@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-//models
-import 'package:basic_da_app/models/product_draft_model.dart';
-import 'package:basic_da_app/models/product_model.dart';
-
 enum CostType { purchase, budget }
 
 //helpers para registrar lote y productos

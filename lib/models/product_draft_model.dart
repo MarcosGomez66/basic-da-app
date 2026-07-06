@@ -32,7 +32,7 @@ class CostTypeAdapter extends TypeAdapter<CostType> {
   }
 }
 
-class ProductDraft{
+class ProductDraft {
   final String name;
   final String group;
   final double price; //precio de venta

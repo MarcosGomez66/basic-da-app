@@ -55,6 +55,8 @@ class ProductDraftCardWidget extends StatelessWidget {
                       IconButton(
                         icon: Icon(Icons.edit),
                         onPressed: () async {
+                          final draftProvider = context
+                              .read<ProductDraftProvider>();
                           final newProduct = await showDialog<ProductDraft>(
                             context: context,
                             barrierDismissible: false,
@@ -62,10 +64,7 @@ class ProductDraftCardWidget extends StatelessWidget {
                                 ProductFormWidget(initialProduct: product),
                           );
                           if (newProduct != null) {
-                            context.read<ProductDraftProvider>().update(
-                              product,
-                              newProduct,
-                            );
+                            draftProvider.update(product, newProduct);
                           }
                         },
                       ),
@@ -152,6 +151,8 @@ class ProductCardWidget extends StatelessWidget {
                       IconButton(
                         icon: Icon(Icons.edit),
                         onPressed: () async {
+                          final productProvider = context
+                              .read<ProductProvider>();
                           final nameController = TextEditingController(
                             text: product.name,
                           );
@@ -197,7 +198,9 @@ class ProductCardWidget extends StatelessWidget {
                                         FilteringTextInputFormatter.digitsOnly,
                                         LengthLimitingTextInputFormatter(4),
                                       ],
-                                      decoration: InputDecoration(labelText: 'Cantidad minima'),
+                                      decoration: InputDecoration(
+                                        labelText: 'Cantidad minima',
+                                      ),
                                       validator: NumberValidator.required,
                                     ),
                                   ],
@@ -223,7 +226,7 @@ class ProductCardWidget extends StatelessWidget {
                             ),
                           );
                           if (result == true) {
-                            await context.read<ProductProvider>().updateProduct(
+                            await productProvider.updateProduct(
                               product: product,
                               newName: nameController.text,
                               newGroup: groupController.text,
@@ -235,6 +238,8 @@ class ProductCardWidget extends StatelessWidget {
                       IconButton(
                         icon: Icon(Icons.block),
                         onPressed: () async {
+                          final productProvider = context
+                              .read<ProductProvider>();
                           final controller = TextEditingController(
                             text: product.stock.toString(),
                           );
@@ -254,8 +259,12 @@ class ProductCardWidget extends StatelessWidget {
                                     FilteringTextInputFormatter.digitsOnly,
                                     LengthLimitingTextInputFormatter(4),
                                   ],
-                                  decoration: InputDecoration(labelText: 'Cantidad a descartar'),
-                                  validator: SubtractionValidator.max(product.stock),
+                                  decoration: InputDecoration(
+                                    labelText: 'Cantidad a descartar',
+                                  ),
+                                  validator: SubtractionValidator.max(
+                                    product.stock,
+                                  ),
                                 ),
                               ),
                               actions: [
@@ -271,15 +280,20 @@ class ProductCardWidget extends StatelessWidget {
                                     if (!key.currentState!.validate()) {
                                       return;
                                     }
-                                    subtrahend = double.tryParse(controller.text);
+                                    subtrahend = double.tryParse(
+                                      controller.text,
+                                    );
                                     Navigator.pop(context, true);
                                   },
-                                )
+                                ),
                               ],
                             ),
                           );
                           if (result == true) {
-                            await context.read<ProductProvider>().subtractProduct(product: product, subtrahend: subtrahend!);
+                            await productProvider.wasteProduct(
+                              product: product,
+                              amount: subtrahend!,
+                            );
                           }
                         },
                       ),

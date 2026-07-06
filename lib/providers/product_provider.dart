@@ -5,6 +5,8 @@ import 'package:hive/hive.dart';
 import 'package:basic_da_app/models/product_draft_model.dart';
 import 'package:basic_da_app/models/product_model.dart';
 import 'package:basic_da_app/models/lot_model.dart';
+import 'package:basic_da_app/models/item_model.dart';
+import 'package:basic_da_app/models/waste_model.dart';
 
 class ProductProvider extends ChangeNotifier {
   LotModel? _currentLot;
@@ -13,6 +15,7 @@ class ProductProvider extends ChangeNotifier {
 
   final Box<LotModel> _lotBox = Hive.box<LotModel>('lots');
   final Box<ProductModel> _productBox = Hive.box<ProductModel>('products');
+  final Box<WasteModel> _wasteBox = Hive.box<WasteModel>('wastes');
 
   //lotes
   Future<void> createLot(LotModel lot) async {
@@ -28,8 +31,14 @@ class ProductProvider extends ChangeNotifier {
 
   Future<void> deactivateLot(LotModel lot) async {
     lot.isActive = false;
-    lot.ended = DateTime.now();
+    lot.endedAt = DateTime.now();
     await lot.save();
+    final products = getProductsByLot(lot.id);
+    for (final product in products) {
+      product.isActive = false;
+      product.endedAt = lot.endedAt;
+      await product.save();
+    }
     notifyListeners();
   }
 
@@ -37,7 +46,7 @@ class ProductProvider extends ChangeNotifier {
     return _lotBox.values
         .where((lot) => lot.businessId == businessId && lot.isActive)
         .toList()
-      ..sort((a, b) => b.uploaded.compareTo(a.uploaded));
+      ..sort((a, b) => b.uploadedAt.compareTo(a.uploadedAt));
   }
 
   //productos
@@ -58,7 +67,7 @@ class ProductProvider extends ChangeNotifier {
         cost: p.cost,
         stock: p.stock,
         minStock: p.minStock,
-        uploaded: DateTime.now(),
+        uploadedAt: DateTime.now(),
       );
       productList.add(newProduct);
     }
@@ -80,23 +89,44 @@ class ProductProvider extends ChangeNotifier {
   }) async {
     product.name = newName;
     product.group = newGroup;
+    product.minStock = newMin;
     await product.save();
     notifyListeners();
   }
 
-  Future<void> subtractProduct({required ProductModel product, required double subtrahend}) async {
-    product.stock -= subtrahend;
-    if (product.stock == 0.0) {
+  Future<void> wasteProduct({
+    required ProductModel product,
+    required double amount,
+  }) async {
+    final waste = WasteModel(
+      id: DateTime.now().microsecondsSinceEpoch.toString(),
+      businessId: product.businessId,
+      items: [
+        ItemModel(
+          productId: product.id,
+          lotId: product.lotId,
+          amount: amount,
+          unityPrice: product.price,
+        ),
+      ],
+      totalWaste: amount * product.price,
+      wastedAt: DateTime.now(),
+    );
+
+    product.stock -= amount;
+    if (product.stock <= 0.0) {
+      product.stock = 0.0;
       await deactivateProduct(product);
     } else {
       await product.save();
-      notifyListeners();
     }
+    await _wasteBox.put(waste.id, waste);
+    notifyListeners();
   }
 
   Future<void> deactivateProduct(ProductModel product) async {
     product.isActive = false;
-    product.ended = DateTime.now();
+    product.endedAt = DateTime.now();
     await product.save();
     notifyListeners();
   }

@@ -10,5 +10,12 @@ class BusinessModel extends HiveObject {
   @HiveField(1)
   String name;
 
-  BusinessModel({required this.id, required this.name});
+  @HiveField(2)
+  DateTime startTime;
+
+  BusinessModel({
+    required this.id,
+    required this.name,
+    required this.startTime,
+  });
 }

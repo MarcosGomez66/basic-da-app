@@ -8,7 +8,11 @@ import 'package:provider/provider.dart';
 class WorkdayStatusWidget extends StatelessWidget {
   final String businessId;
   final WorkdayModel? currentWorkday;
-  const WorkdayStatusWidget({super.key, required this.businessId, required this.currentWorkday});
+  const WorkdayStatusWidget({
+    super.key,
+    required this.businessId,
+    required this.currentWorkday,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +29,7 @@ class WorkdayStatusWidget extends StatelessWidget {
           onPressed: () {
             Navigator.pushNamed(context, '/workdays');
           },
-        )
+        ),
       ],
     );
   }
@@ -51,15 +55,20 @@ class StatusText extends StatelessWidget {
 class StatusButton extends StatelessWidget {
   final String businessId;
   final bool isOpen;
-  const StatusButton({super.key, required this.businessId, required this.isOpen});
+  const StatusButton({
+    super.key,
+    required this.businessId,
+    required this.isOpen,
+  });
 
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
       onPressed: () async {
+        final workdayProvider = context.read<WorkdayProvider>();
         //iniciar jornada
         if (!isOpen) {
-          await context.read<WorkdayProvider>().startWorkday(businessId: businessId);
+          await workdayProvider.startWorkday(businessId: businessId);
           return;
         }
         //terminar jornada
@@ -84,22 +93,18 @@ class StatusButton extends StatelessWidget {
                 ),
               ],
             );
-          }
+          },
         );
         if (confirm == true) {
-          await context.read<WorkdayProvider>().endWorkday();
+          await workdayProvider.endWorkday();
           if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Jornada Finalizada'),
-              ),
-            );
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(const SnackBar(content: Text('Jornada Finalizada')));
           }
         }
       },
-      child: Text(
-        isOpen ? 'Terminar jornada' : 'Iniciar jornada',
-      ),
+      child: Text(isOpen ? 'Terminar jornada' : 'Iniciar jornada'),
     );
   }
 }

@@ -14,9 +14,7 @@ class SummaryScreen extends StatelessWidget {
     final businessId = context.watch<BusinessProvider>().selectedBusiness!.id;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Inicio'),
-      ),
+      appBar: AppBar(title: const Text('Inicio')),
       body: Center(
         child: Consumer<WorkdayProvider>(
           builder: (context, workdayProvider, child) {
@@ -26,7 +24,6 @@ class SummaryScreen extends StatelessWidget {
                   businessId: businessId,
                   currentWorkday: workdayProvider.currentWorkday,
                 ),
-
               ],
             );
           },

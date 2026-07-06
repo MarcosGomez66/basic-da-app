@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import 'package:basic_da_app/app/helpers.dart';
 //models
 import 'package:basic_da_app/models/product_draft_model.dart';
+import 'package:basic_da_app/models/product_model.dart';
+//providers
+import 'package:basic_da_app/providers/business_provider.dart';
+import 'package:basic_da_app/providers/product_provider.dart';
 
 class ProductFormWidget extends StatefulWidget {
   final ProductDraft? initialProduct;
-  const ProductFormWidget({
-    super.key,
-    this.initialProduct,
-  });
+  const ProductFormWidget({super.key, this.initialProduct});
 
   @override
   State<ProductFormWidget> createState() => _ProductFormWidgetState();
@@ -22,6 +24,8 @@ class _ProductFormWidgetState extends State<ProductFormWidget> {
   late final TextEditingController minStockController;
   late final TextEditingController priceController;
   late final TextEditingController costController;
+  late final FocusNode nameFocusNode;
+  late final FocusNode groupFocusNode;
 
   late CostType costType;
 
@@ -49,6 +53,8 @@ class _ProductFormWidgetState extends State<ProductFormWidget> {
     costController = TextEditingController(
       text: widget.initialProduct?.cost.toString() ?? '',
     );
+    nameFocusNode = FocusNode();
+    groupFocusNode = FocusNode();
   }
 
   @override
@@ -59,13 +65,24 @@ class _ProductFormWidgetState extends State<ProductFormWidget> {
     minStockController.dispose();
     priceController.dispose();
     costController.dispose();
+    nameFocusNode.dispose();
+    groupFocusNode.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final business = context.watch<BusinessProvider>().selectedBusiness;
+    final List<ProductModel> products = business == null
+        ? []
+        : context.watch<ProductProvider>().getProductsByBusiness(business.id);
+    final names = products.map((product) => product.name).toSet().toList();
+    final groups = products.map((product) => product.group).toSet().toList();
+
     return AlertDialog(
-      title: Text(widget.initialProduct != null ? 'Editar producto' : 'Ingresar Producto'),
+      title: Text(
+        widget.initialProduct != null ? 'Editar producto' : 'Ingresar Producto',
+      ),
       content: SingleChildScrollView(
         child: Form(
           key: formKey,
@@ -73,18 +90,60 @@ class _ProductFormWidgetState extends State<ProductFormWidget> {
             mainAxisSize: MainAxisSize.min,
             children: [
               //nombre
-              TextFormField(
-                controller: nameController,
-                maxLength: 25,
-                decoration: InputDecoration(labelText: 'Nombre del producto'),
-                validator: StringValidator.required,
+              RawAutocomplete<String>(
+                textEditingController: nameController,
+                focusNode: nameFocusNode,
+                optionsBuilder: (TextEditingValue textEditingValue) {
+                  final value = textEditingValue.text.toLowerCase();
+                  if (value.isEmpty) return const Iterable<String>.empty();
+                  return names.where(
+                    (name) => name.toLowerCase().contains(value),
+                  );
+                },
+                fieldViewBuilder: (context, controller, focusNode, onSubmit) {
+                  return TextFormField(
+                    controller: controller,
+                    focusNode: focusNode,
+                    maxLength: 25,
+                    decoration: InputDecoration(
+                      labelText: 'Nombre del producto',
+                    ),
+                    validator: StringValidator.required,
+                  );
+                },
+                optionsViewBuilder: (context, onSelected, options) {
+                  return _AutocompleteOptions(
+                    options: options,
+                    onSelected: onSelected,
+                  );
+                },
               ),
               //grupo
-              TextFormField(
-                controller: groupController,
-                maxLength: 25,
-                decoration: InputDecoration(labelText: 'Grupo'),
-                validator: StringValidator.required,
+              RawAutocomplete<String>(
+                textEditingController: groupController,
+                focusNode: groupFocusNode,
+                optionsBuilder: (TextEditingValue textEditingValue) {
+                  final value = textEditingValue.text.toLowerCase();
+                  if (value.isEmpty) return const Iterable<String>.empty();
+                  return groups.where(
+                    (group) => group.toLowerCase().contains(value),
+                  );
+                },
+                fieldViewBuilder: (context, controller, focusNode, onSubmit) {
+                  return TextFormField(
+                    controller: controller,
+                    focusNode: focusNode,
+                    maxLength: 25,
+                    decoration: InputDecoration(labelText: 'Grupo'),
+                    validator: StringValidator.required,
+                  );
+                },
+                optionsViewBuilder: (context, onSelected, options) {
+                  return _AutocompleteOptions(
+                    options: options,
+                    onSelected: onSelected,
+                  );
+                },
               ),
               //cantidad
               TextFormField(
@@ -186,6 +245,40 @@ class _ProductFormWidgetState extends State<ProductFormWidget> {
           },
         ),
       ],
+    );
+  }
+}
+
+class _AutocompleteOptions extends StatelessWidget {
+  final Iterable<String> options;
+  final ValueChanged<String> onSelected;
+
+  const _AutocompleteOptions({required this.options, required this.onSelected});
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: Alignment.topLeft,
+      child: Material(
+        elevation: 4,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxHeight: 180, maxWidth: 280),
+          child: ListView.builder(
+            padding: EdgeInsets.zero,
+            shrinkWrap: true,
+            itemCount: options.length,
+            itemBuilder: (context, index) {
+              final option = options.elementAt(index);
+
+              return ListTile(
+                dense: true,
+                title: Text(option),
+                onTap: () => onSelected(option),
+              );
+            },
+          ),
+        ),
+      ),
     );
   }
 }

@@ -4,7 +4,7 @@ import 'package:basic_da_app/app/helpers.dart';
 part 'product_model.g.dart';
 
 @HiveType(typeId: 3)
-class ProductModel extends HiveObject{
+class ProductModel extends HiveObject {
   @HiveField(0)
   final String id;
 
@@ -39,10 +39,10 @@ class ProductModel extends HiveObject{
   bool isActive;
 
   @HiveField(11)
-  final DateTime uploaded;
+  final DateTime uploadedAt;
 
   @HiveField(12)
-  DateTime? ended;
+  DateTime? endedAt;
 
   ProductModel({
     required this.id,
@@ -56,7 +56,7 @@ class ProductModel extends HiveObject{
     required this.stock,
     required this.minStock,
     this.isActive = true,
-    required this.uploaded,
-    this.ended
+    required this.uploadedAt,
+    this.endedAt,
   });
 }

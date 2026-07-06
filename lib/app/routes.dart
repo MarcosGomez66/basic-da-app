@@ -8,8 +8,8 @@ import 'package:basic_da_app/screens/edit_lot_screen.dart';
 
 final Map<String, WidgetBuilder> appRoutes = {
   '/': (context) => const WelcomeScreen(),
-  '/home' : (context) => const MainLayout(),
-  '/workdays' : (context) => const WorkdaysScreen(),
-  '/new_lot' : (context) => const NewLotScreen(),
-  '/edit_lot' : (context) => const EditLotScreen(),
+  '/home': (context) => const MainLayout(),
+  '/workdays': (context) => const WorkdaysScreen(),
+  '/new_lot': (context) => const NewLotScreen(),
+  '/edit_lot': (context) => const EditLotScreen(),
 };

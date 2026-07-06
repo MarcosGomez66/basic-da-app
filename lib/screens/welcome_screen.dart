@@ -25,9 +25,10 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   void createBusiness(String name) {
     final business = BusinessModel(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
-      name: name
+      name: name,
+      startTime: DateTime.now(),
     );
-    businessBox.add(business);
+    businessBox.put(business.id, business);
     setState(() {});
   }
 
@@ -41,7 +42,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
         content: TextField(
           controller: controller,
           decoration: const InputDecoration(
-            hintText: 'Ingrese el nombre del negocio'
+            hintText: 'Ingrese el nombre del negocio',
           ),
         ),
         actions: [
@@ -57,9 +58,9 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               }
             },
             child: const Text('Crear'),
-          )
+          ),
         ],
-      )
+      ),
     );
   }
 
@@ -74,57 +75,61 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const SizedBox(height: 40,),
+              const SizedBox(height: 40),
               // Texto de bienvenida
               const Text(
                 'Bienvenido/a',
-                style: TextStyle(
-                  fontSize: 36,
-                  color: Colors.grey
-                ),
+                style: TextStyle(fontSize: 36, color: Colors.grey),
                 textAlign: TextAlign.center,
               ),
               const Text(
                 'Selecciona un negocio o crea uno nuevo',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.grey
-                ),
+                style: TextStyle(fontSize: 16, color: Colors.grey),
                 textAlign: TextAlign.center,
               ),
               //lista de negocios
               Expanded(
-                child: businesses.isEmpty ? const Center(
-                  child: Text('No hay negocios', style: TextStyle(fontSize: 16),),
-                ) : ListView.builder(
-                  itemCount: businesses.length,
-                  itemBuilder: (context, index) {
-                    final business = businesses[index];
-
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                      child: Card(
-                        elevation: 2,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
+                child: businesses.isEmpty
+                    ? const Center(
+                        child: Text(
+                          'No hay negocios',
+                          style: TextStyle(fontSize: 16),
                         ),
-                        child: ListTile(
-                          title: Text(business.name, textAlign: TextAlign.center,),
-                          onTap: () {
-                            context.read<BusinessProvider>().selectBusiness(business);
+                      )
+                    : ListView.builder(
+                        itemCount: businesses.length,
+                        itemBuilder: (context, index) {
+                          final business = businesses[index];
 
-                            Navigator.pushReplacementNamed(
-                              context,
-                              '/home'
-                            );
-                          },
-                        ),
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8),
+                            child: Card(
+                              elevation: 2,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: ListTile(
+                                title: Text(
+                                  business.name,
+                                  textAlign: TextAlign.center,
+                                ),
+                                onTap: () {
+                                  context
+                                      .read<BusinessProvider>()
+                                      .selectBusiness(business);
+
+                                  Navigator.pushReplacementNamed(
+                                    context,
+                                    '/home',
+                                  );
+                                },
+                              ),
+                            ),
+                          );
+                        },
                       ),
-                    );
-                  },
-                ),
               ),
-              const SizedBox(height: 20,),
+              const SizedBox(height: 20),
               //Boton
               SizedBox(
                 width: double.infinity,
@@ -133,7 +138,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   onPressed: showCreateDialog,
                   child: const Text('Crear nuevo negocio'),
                 ),
-              )
+              ),
             ],
           ),
         ),

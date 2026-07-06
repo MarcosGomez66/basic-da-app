@@ -14,9 +14,7 @@ class WorkdaysScreen extends StatelessWidget {
     final workdays = context.watch<WorkdayProvider>().getWorkdays(businessId);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Historial de Jornadas'),
-      ),
+      appBar: AppBar(title: const Text('Historial de Jornadas')),
       body: ListView.builder(
         itemCount: workdays.length,
         itemBuilder: (context, index) {

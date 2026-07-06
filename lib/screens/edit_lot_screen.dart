@@ -4,7 +4,6 @@ import 'package:basic_da_app/app/helpers.dart';
 
 //providers
 import 'package:basic_da_app/providers/product_provider.dart';
-import 'package:basic_da_app/providers/business_provider.dart';
 
 //widgets
 import 'package:basic_da_app/widgets/product_card_widget.dart';
@@ -22,11 +21,6 @@ class EditLotScreen extends StatelessWidget {
     final List<ProductModel> products = context
         .watch<ProductProvider>()
         .getProductsByLot(arg!.id);
-    final String businessId = context
-        .watch<BusinessProvider>()
-        .selectedBusiness!
-        .id;
-
     return Scaffold(
       appBar: AppBar(
         title: Text('Editar lote'),
@@ -44,7 +38,10 @@ class EditLotScreen extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             //titulo
-            Text('Lote: ${formatDate(arg.uploaded)}', style: TextStyle(fontSize: 20),),
+            Text(
+              'Lote: ${formatDate(arg.uploadedAt)}',
+              style: TextStyle(fontSize: 20),
+            ),
             //boton para agregar producto
             SizedBox(height: 5),
             //lista de productos agregados
@@ -81,10 +78,10 @@ class EditLotScreen extends StatelessWidget {
           children: [
             Expanded(
               child: ElevatedButton(
-                child: Text('Desactivar'),
                 onPressed: products.isEmpty
                     ? null
                     : () async {
+                        final productProvider = context.read<ProductProvider>();
                         final result = await showDialog(
                           context: context,
                           barrierDismissible: false,
@@ -110,14 +107,17 @@ class EditLotScreen extends StatelessWidget {
                           ),
                         );
                         if (result == true) {
-                          //desactivar lote
+                          await productProvider.deactivateLot(arg);
+                          if (context.mounted) {
+                            Navigator.pop(context);
+                          }
                         }
                       },
+                child: Text('Desactivar'),
               ),
             ),
             Expanded(
               child: ElevatedButton(
-                child: Text('Listo'),
                 onPressed: () async {
                   final result = await showDialog(
                     context: context,
@@ -142,9 +142,12 @@ class EditLotScreen extends StatelessWidget {
                     ),
                   );
                   if (result == true) {
-                    Navigator.pop(context);
+                    if (context.mounted) {
+                      Navigator.pop(context);
+                    }
                   }
                 },
+                child: Text('Listo'),
               ),
             ),
           ],

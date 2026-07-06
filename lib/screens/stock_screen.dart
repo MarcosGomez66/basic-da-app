@@ -4,7 +4,6 @@ import 'package:basic_da_app/app/helpers.dart';
 
 //providers
 import 'package:basic_da_app/providers/product_provider.dart';
-import 'package:basic_da_app/providers/workday_provider.dart';
 import 'package:basic_da_app/providers/business_provider.dart';
 
 class StockScreen extends StatelessWidget {
@@ -13,7 +12,6 @@ class StockScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final business = context.watch<BusinessProvider>().selectedBusiness;
-    final workday = context.watch<WorkdayProvider>().currentWorkday;
     final lots = context.watch<ProductProvider>().getLotByBusiness(
       business!.id,
     );
@@ -49,7 +47,7 @@ class StockScreen extends StatelessWidget {
                     Expanded(
                       flex: 8,
                       child: Text(
-                        'Lote: ${formatDate(lots[index].uploaded)}',
+                        'Lote: ${formatDate(lots[index].uploadedAt)}',
                         style: TextStyle(fontSize: 20),
                       ),
                     ),
@@ -61,19 +59,23 @@ class StockScreen extends StatelessWidget {
                           Navigator.pushNamed(
                             context,
                             '/edit_lot',
-                            arguments: lots[index]
+                            arguments: lots[index],
                           );
                         },
                       ),
-                    )
+                    ),
                   ],
                 ),
-                Text('Precio total de venta: ${lots[index].totalPrice.toString()}'),
-                Text('Precio total de compra: ${lots[index].totalCost.toString()}'),
+                Text(
+                  'Precio total de venta: ${lots[index].totalPrice.toString()}',
+                ),
+                Text(
+                  'Precio total de compra: ${lots[index].totalCost.toString()}',
+                ),
                 Text(
                   'Ganancia esperada: ${(lots[index].totalPrice - lots[index].totalCost).toString()}',
                 ),
-                Text('Total de articulos: ${lots[index].totalProducts}')
+                Text('Total de articulos: ${lots[index].totalArticles}'),
               ],
             ),
           );

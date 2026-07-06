@@ -15,9 +15,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final business = context.watch<BusinessProvider>().selectedBusiness;
 
     if (business == null) {
-      return const Center(
-        child: Text('No hay negocio seleccionado'),
-      );
+      return const Center(child: Text('No hay negocio seleccionado'));
     }
 
     return Scaffold(
@@ -25,9 +23,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         automaticallyImplyLeading: false,
         title: Text('Configuración'),
       ),
-      body: Center(
-        child: Text('Configuración del negocio: ${business.name}'),
-      ),
+      body: Center(child: Text('Configuración del negocio: ${business.name}')),
       /*
         Lista de configuraciones posibles
       */

@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:basic_da_app/models/item_model.dart';
 
 part 'sale_model.g.dart';
 
@@ -14,7 +15,7 @@ class SaleModel extends HiveObject {
   final String workdayId;
 
   @HiveField(3)
-  final Map<String, List> products; //{'product_id': [amount, 'product_lot']}
+  final List<ItemModel> items;
 
   @HiveField(4)
   final double totalSold;
@@ -26,7 +27,7 @@ class SaleModel extends HiveObject {
     required this.id,
     required this.businessId,
     required this.workdayId,
-    required this.products,
+    required this.items,
     required this.totalSold,
     required this.soldAt,
   });

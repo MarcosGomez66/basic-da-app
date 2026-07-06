@@ -15,9 +15,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final business = context.watch<BusinessProvider>().selectedBusiness;
 
     if (business == null) {
-      return const Center(
-        child: Text('No hay negocio seleccionado'),
-      );
+      return const Center(child: Text('No hay negocio seleccionado'));
     }
 
     return Scaffold(

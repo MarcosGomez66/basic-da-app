@@ -11,6 +11,8 @@ import 'package:basic_da_app/models/product_draft_model.dart';
 import 'package:basic_da_app/models/lot_model.dart';
 import 'package:basic_da_app/models/workday_model.dart';
 import 'package:basic_da_app/models/sale_model.dart';
+import 'package:basic_da_app/models/item_model.dart';
+import 'package:basic_da_app/models/waste_model.dart';
 
 //providers
 import 'package:basic_da_app/providers/business_provider.dart';
@@ -29,30 +31,26 @@ void main() async {
   Hive.registerAdapter(LotModelAdapter());
   Hive.registerAdapter(CostTypeAdapter());
   Hive.registerAdapter(ProductModelAdapter());
+  Hive.registerAdapter(ItemModelAdapter());
   Hive.registerAdapter(SaleModelAdapter());
+  Hive.registerAdapter(WasteModelAdapter());
 
   await Hive.openBox<BusinessModel>('businesses');
   await Hive.openBox<WorkdayModel>('workdays');
   await Hive.openBox<LotModel>('lots');
   await Hive.openBox<ProductModel>('products');
+  await Hive.openBox<SaleModel>('sales');
+  await Hive.openBox<WasteModel>('wastes');
 
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(
-          create: (_) => BusinessProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => WorkdayProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => ProductDraftProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => ProductProvider(),
-        )
+        ChangeNotifierProvider(create: (_) => BusinessProvider()),
+        ChangeNotifierProvider(create: (_) => WorkdayProvider()),
+        ChangeNotifierProvider(create: (_) => ProductDraftProvider()),
+        ChangeNotifierProvider(create: (_) => ProductProvider()),
       ],
       child: const MyApp(),
-    )
+    ),
   );
 }

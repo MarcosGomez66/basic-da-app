@@ -20,8 +20,7 @@ class SaleModelAdapter extends TypeAdapter<SaleModel> {
       id: fields[0] as String,
       businessId: fields[1] as String,
       workdayId: fields[2] as String,
-      products: (fields[3] as Map).map((dynamic k, dynamic v) =>
-          MapEntry(k as String, (v as List).cast<dynamic>())),
+      items: _readItems(fields[3]),
       totalSold: fields[4] as double,
       soldAt: fields[5] as DateTime,
     );
@@ -38,7 +37,7 @@ class SaleModelAdapter extends TypeAdapter<SaleModel> {
       ..writeByte(2)
       ..write(obj.workdayId)
       ..writeByte(3)
-      ..write(obj.products)
+      ..write(obj.items)
       ..writeByte(4)
       ..write(obj.totalSold)
       ..writeByte(5)
@@ -54,4 +53,24 @@ class SaleModelAdapter extends TypeAdapter<SaleModel> {
       other is SaleModelAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
+}
+
+List<ItemModel> _readItems(dynamic storedItems) {
+  if (storedItems is List) {
+    return storedItems.cast<ItemModel>();
+  }
+
+  if (storedItems is Map) {
+    return storedItems.entries.map((entry) {
+      final values = entry.value as List;
+      return ItemModel(
+        productId: entry.key as String,
+        amount: (values[0] as num).toDouble(),
+        lotId: values[1] as String,
+        unityPrice: values.length > 2 ? (values[2] as num).toDouble() : 0,
+      );
+    }).toList();
+  }
+
+  return const [];
 }
