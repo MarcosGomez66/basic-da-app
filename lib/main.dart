@@ -19,6 +19,7 @@ import 'package:basic_da_app/providers/business_provider.dart';
 import 'package:basic_da_app/providers/workday_provider.dart';
 import 'package:basic_da_app/providers/product_draft_provider.dart';
 import 'package:basic_da_app/providers/product_provider.dart';
+import 'package:basic_da_app/providers/movements_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -49,6 +50,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => WorkdayProvider()),
         ChangeNotifierProvider(create: (_) => ProductDraftProvider()),
         ChangeNotifierProvider(create: (_) => ProductProvider()),
+        ChangeNotifierProvider(create: (_) => MovementsProvider()),
       ],
       child: const MyApp(),
     ),

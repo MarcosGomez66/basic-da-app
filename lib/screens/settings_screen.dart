@@ -23,10 +23,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
         automaticallyImplyLeading: false,
         title: Text('Configuración'),
       ),
-      body: Center(child: Text('Configuración del negocio: ${business.name}')),
-      /*
-        Lista de configuraciones posibles
-      */
+      body: Center(
+        child: Column(
+
+        ),
+      ),
     );
   }
 }
