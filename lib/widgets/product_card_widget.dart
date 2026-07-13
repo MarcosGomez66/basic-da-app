@@ -8,7 +8,7 @@ import 'package:basic_da_app/models/product_draft_model.dart';
 import 'package:basic_da_app/models/product_model.dart';
 
 // providers
-import 'package:basic_da_app/providers/product_draft_provider.dart';
+import 'package:basic_da_app/providers/draft_provider.dart';
 import 'package:basic_da_app/providers/product_provider.dart';
 
 // widgets
@@ -56,7 +56,7 @@ class ProductDraftCardWidget extends StatelessWidget {
                         icon: Icon(Icons.edit),
                         onPressed: () async {
                           final draftProvider = context
-                              .read<ProductDraftProvider>();
+                              .read<DraftProvider>();
                           final newProduct = await showDialog<ProductDraft>(
                             context: context,
                             barrierDismissible: false,
@@ -87,7 +87,7 @@ class ProductDraftCardWidget extends StatelessWidget {
                                 ElevatedButton(
                                   child: Text('Aceptar'),
                                   onPressed: () {
-                                    context.read<ProductDraftProvider>().remove(
+                                    context.read<DraftProvider>().remove(
                                       product,
                                     );
                                     Navigator.pop(context);

@@ -17,7 +17,7 @@ import 'package:basic_da_app/models/waste_model.dart';
 //providers
 import 'package:basic_da_app/providers/business_provider.dart';
 import 'package:basic_da_app/providers/workday_provider.dart';
-import 'package:basic_da_app/providers/product_draft_provider.dart';
+import 'package:basic_da_app/providers/draft_provider.dart';
 import 'package:basic_da_app/providers/product_provider.dart';
 import 'package:basic_da_app/providers/movements_provider.dart';
 
@@ -48,7 +48,7 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => BusinessProvider()),
         ChangeNotifierProvider(create: (_) => WorkdayProvider()),
-        ChangeNotifierProvider(create: (_) => ProductDraftProvider()),
+        ChangeNotifierProvider(create: (_) => DraftProvider()),
         ChangeNotifierProvider(create: (_) => ProductProvider()),
         ChangeNotifierProvider(create: (_) => MovementsProvider()),
       ],

@@ -142,4 +142,8 @@ class ProductProvider extends ChangeNotifier {
         .where((p) => p.lotId == lotId && p.isActive)
         .toList();
   }
+
+  ProductModel? getProductById(String id) {
+    return _productBox.get(id);
+  }
 }

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 //models
 import 'package:basic_da_app/models/product_draft_model.dart';
 
-class ProductDraftProvider extends ChangeNotifier {
+class DraftProvider extends ChangeNotifier {
   final List<ProductDraft> _products = [];
 
   List<ProductDraft> get products => List.unmodifiable(_products);

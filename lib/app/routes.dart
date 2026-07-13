@@ -5,6 +5,8 @@ import 'package:basic_da_app/screens/welcome_screen.dart';
 import 'package:basic_da_app/screens/workdays_screen.dart';
 import 'package:basic_da_app/screens/new_lot_screen.dart';
 import 'package:basic_da_app/screens/edit_lot_screen.dart';
+import 'package:basic_da_app/screens/sale_screen.dart';
+import 'package:basic_da_app/screens/movements_history_screen.dart';
 
 final Map<String, WidgetBuilder> appRoutes = {
   '/': (context) => const WelcomeScreen(),
@@ -12,4 +14,6 @@ final Map<String, WidgetBuilder> appRoutes = {
   '/workdays': (context) => const WorkdaysScreen(),
   '/new_lot': (context) => const NewLotScreen(),
   '/edit_lot': (context) => const EditLotScreen(),
+  '/sale': (context) => const SaleScreen(),
+  //'/movements_history': (context) => const MovementsHistoryScreen(),
 };

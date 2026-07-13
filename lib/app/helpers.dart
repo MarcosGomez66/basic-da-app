@@ -1,3 +1,4 @@
+import 'package:basic_da_app/models/item_model.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -22,6 +23,15 @@ double totalCost(List products) {
     } else {
       total += p.cost;
     }
+  }
+  return total;
+}
+
+double totalSold(List<ItemModel> items) {
+  double total = 0.0;
+  for (final i in items) {
+    final subTotal = i.unityPrice * i.amount;
+    total += subTotal;
   }
   return total;
 }
@@ -73,6 +83,8 @@ class SubtractionValidator {
         return 'Debe ser mayor a 0';
       }
       if (number > maximum) {
+        print('number: $number');
+        print('maximun: $maximum');
         return 'Excede la cantidad actual';
       }
       return null;

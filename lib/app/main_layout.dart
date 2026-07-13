@@ -5,6 +5,7 @@ import 'package:basic_da_app/screens/summary_screen.dart';
 import 'package:basic_da_app/screens/dashboard_screen.dart';
 import 'package:basic_da_app/screens/stock_screen.dart';
 import 'package:basic_da_app/screens/settings_screen.dart';
+import 'package:basic_da_app/screens/sale_screen.dart';
 //providers
 import 'package:basic_da_app/providers/workday_provider.dart';
 import 'package:basic_da_app/providers/business_provider.dart';
@@ -43,9 +44,7 @@ class _MainLayoutState extends State<MainLayout> {
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.point_of_sale, color: Colors.white),
         onPressed: () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: const Text('Proximamente: Formulario de venta')),
-          );
+          Navigator.pushNamed(context, '/sale');
         },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,

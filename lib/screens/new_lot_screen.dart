@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:basic_da_app/app/helpers.dart';
 
 //providers
-import 'package:basic_da_app/providers/product_draft_provider.dart';
+import 'package:basic_da_app/providers/draft_provider.dart';
 import 'package:basic_da_app/providers/product_provider.dart';
 import 'package:basic_da_app/providers/business_provider.dart';
 
@@ -48,7 +48,7 @@ class NewLotScreen extends StatelessWidget {
   }
 
   Future<void> _exitLotScreen(BuildContext context) async {
-    final draftProvider = context.read<ProductDraftProvider>();
+    final draftProvider = context.read<DraftProvider>();
 
     if (draftProvider.products.isEmpty) {
       Navigator.pop(context);
@@ -65,9 +65,7 @@ class NewLotScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<ProductDraft> products = context
-        .watch<ProductDraftProvider>()
-        .products;
+    final List<ProductDraft> products = context.watch<DraftProvider>().products;
     final String businessId = context
         .watch<BusinessProvider>()
         .selectedBusiness!
@@ -105,7 +103,7 @@ class NewLotScreen extends StatelessWidget {
               //boton para agregar producto
               ElevatedButton.icon(
                 onPressed: () async {
-                  final draftProvider = context.read<ProductDraftProvider>();
+                  final draftProvider = context.read<DraftProvider>();
                   final product = await showDialog<ProductDraft>(
                     barrierDismissible: false,
                     context: context,
@@ -156,8 +154,7 @@ class NewLotScreen extends StatelessWidget {
                   onPressed: products.isEmpty
                       ? null
                       : () async {
-                          final draftProvider = context
-                              .read<ProductDraftProvider>();
+                          final draftProvider = context.read<DraftProvider>();
                           final result = await showDialog(
                             context: context,
                             barrierDismissible: false,
@@ -197,7 +194,7 @@ class NewLotScreen extends StatelessWidget {
                           ? null
                           : () async {
                               final draftProvider = context
-                                  .read<ProductDraftProvider>();
+                                  .read<DraftProvider>();
                               final result = await showDialog(
                                 context: context,
                                 barrierDismissible: false,

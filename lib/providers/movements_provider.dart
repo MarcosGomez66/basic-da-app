@@ -9,6 +9,35 @@ class MovementsProvider extends ChangeNotifier {
   final Box<ProductModel> _productBox = Hive.box<ProductModel>('products');
   final Box<SaleModel> _saleBox = Hive.box<SaleModel>('sales');
 
+  final List<ItemModel> _itemsDraft = [];
+  List<ItemModel> get itemsDraft => List.unmodifiable(_itemsDraft);
+
+  //borrador venta
+  void addDraft(ItemModel item) {
+    _itemsDraft.add(item);
+    notifyListeners();
+  }
+
+  void updateDraft(ItemModel oldItem, ItemModel newItem) {
+    final index = _itemsDraft.indexOf(oldItem);
+
+    if (index != -1) {
+      _itemsDraft[index] = newItem;
+      notifyListeners();
+    }
+  }
+
+  void removeDraft(ItemModel item) {
+    _itemsDraft.remove(item);
+    notifyListeners();
+  }
+
+  void clearDraft() {
+    _itemsDraft.clear();
+    notifyListeners();
+  }
+
+  //venta
   Future<void> registerSale({
     required String businessId,
     required String workdayId,

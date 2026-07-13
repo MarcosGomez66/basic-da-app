@@ -1,7 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:basic_da_app/app/helpers.dart';
 
-enum CardType { show, edit }
 
 class CostTypeAdapter extends TypeAdapter<CostType> {
   @override
