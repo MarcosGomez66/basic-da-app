@@ -212,7 +212,7 @@ class _AutocompleteOptions extends StatelessWidget {
                 dense: true,
                 title: Text(option.name),
                 subtitle: Text(option.price.toString()),
-                trailing: Text(option.stock.toString()),
+                trailing: Text(context.read<MovementsProvider>().availableStock(option).toString()),
                 onTap: () => onSelected(option),
               );
             },

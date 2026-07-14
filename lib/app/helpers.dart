@@ -85,8 +85,6 @@ class SubtractionValidator {
         return 'Debe ser mayor a 0';
       }
       if (number > maximum) {
-        print('number: $number');
-        print('maximun: $maximum');
         return 'Excede la cantidad actual';
       }
       return null;
