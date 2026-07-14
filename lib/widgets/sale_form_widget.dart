@@ -1,16 +1,21 @@
+//sale_form_widget.dart
+import 'package:basic_da_app/providers/movements_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:basic_da_app/app/helpers.dart';
+
 //models
-import 'package:basic_da_app/models/item_model.dart';
+import 'package:basic_da_app/models/item_draft_model.dart';
 import 'package:basic_da_app/models/product_model.dart';
+
 //providers
 import 'package:basic_da_app/providers/business_provider.dart';
 import 'package:basic_da_app/providers/product_provider.dart';
 
 class SaleFormWidget extends StatefulWidget {
-  final ItemModel? item;
+  final ItemDraft? item;
+
   const SaleFormWidget({super.key, this.item});
 
   @override
@@ -21,6 +26,7 @@ class _SaleFormWidgetState extends State<SaleFormWidget> {
   late final TextEditingController nameController;
   late final TextEditingController amountController;
   late final FocusNode nameFocusNode;
+
   late ProductModel? selectedProduct;
 
   final formKey = GlobalKey<FormState>();
@@ -28,15 +34,16 @@ class _SaleFormWidgetState extends State<SaleFormWidget> {
   @override
   void initState() {
     super.initState();
+
     if (widget.item != null) {
-      selectedProduct = context.read<ProductProvider>().getProductById(widget.item!.productId);
+      selectedProduct = context.read<ProductProvider>().getProductById(
+        widget.item!.productId,
+      );
     } else {
       selectedProduct = null;
     }
 
-    nameController = TextEditingController(
-      text: selectedProduct?.name ?? '',
-    );
+    nameController = TextEditingController(text: selectedProduct?.name ?? '');
     amountController = TextEditingController(
       text: widget.item?.amount.toString() ?? '',
     );
@@ -52,15 +59,13 @@ class _SaleFormWidgetState extends State<SaleFormWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final business = context.watch<BusinessProvider>().selectedBusiness;
-    final List<ProductModel> products = business == null
-    ? []
-    : context.watch<ProductProvider>().getProductsByBusiness(business.id);
+    final businessId = context.read<BusinessProvider>().selectedBusiness!.id;
+    final products = context.watch<ProductProvider>().getProductsByBusiness(
+      businessId,
+    );
 
     return AlertDialog(
-      title: Text(
-        widget.item != null ? 'Editar producto' : 'Buscar producto',
-      ),
+      title: Text(widget.item != null ? 'Editar producto' : 'Buscar producto'),
       content: SingleChildScrollView(
         child: Form(
           key: formKey,
@@ -81,7 +86,7 @@ class _SaleFormWidgetState extends State<SaleFormWidget> {
                   final value = textEditingValue.text.toLowerCase();
                   if (value.isEmpty) return const Iterable.empty();
                   return products.where(
-                      (product) => product.name.toLowerCase().contains(value)
+                    (product) => product.name.toLowerCase().contains(value),
                   );
                 },
                 fieldViewBuilder: (context, controller, focusNode, onSubmit) {
@@ -101,7 +106,10 @@ class _SaleFormWidgetState extends State<SaleFormWidget> {
                   );
                 },
                 optionsViewBuilder: (context, onSelected, options) {
-                  return _AutocompleteOptions(options: options, onSelected: onSelected);
+                  return _AutocompleteOptions(
+                    options: options,
+                    onSelected: onSelected,
+                  );
                 },
               ),
               //cantidad
@@ -112,11 +120,34 @@ class _SaleFormWidgetState extends State<SaleFormWidget> {
                   FilteringTextInputFormatter.digitsOnly,
                   LengthLimitingTextInputFormatter(4),
                 ],
-                decoration: InputDecoration(
-                  labelText: 'Cantidad'
-                ),
-                validator: SubtractionValidator.max(selectedProduct?.stock ?? 1.0),
-              )
+                decoration: InputDecoration(labelText: 'Cantidad'),
+                validator: (value) {
+                  final movementProvider = context.read<MovementsProvider>();
+
+                  if (selectedProduct == null) {
+                    return "Seleccione un producto";
+                  }
+
+                  final amount = double.tryParse(value ?? "");
+
+                  if (amount == null) {
+                    return "Cantidad inválida";
+                  }
+
+                  final max = widget.item == null
+                      ? movementProvider.availableStock(selectedProduct!)
+                      : movementProvider.availableStockForEdition(
+                          selectedProduct!,
+                          widget.item!,
+                        );
+
+                  if (amount > max) {
+                    return "Stock insuficiente";
+                  }
+
+                  return null;
+                },
+              ),
             ],
           ),
         ),
@@ -134,21 +165,23 @@ class _SaleFormWidgetState extends State<SaleFormWidget> {
             if (!formKey.currentState!.validate()) {
               return;
             }
-            if (selectedProduct == null || nameController.text != selectedProduct!.name) {
+            if (selectedProduct == null ||
+                nameController.text != selectedProduct!.name) {
               ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Seleccione un producto valido'))
+                const SnackBar(content: Text('Seleccione un producto valido')),
               );
               return;
             }
-            final item = ItemModel(
+            final item = ItemDraft(
               productId: selectedProduct!.id,
               lotId: selectedProduct!.lotId,
+              productName: selectedProduct!.name,
               amount: double.parse(amountController.text),
               unityPrice: selectedProduct!.price,
             );
             Navigator.pop(context, item);
           },
-        )
+        ),
       ],
     );
   }
@@ -167,10 +200,7 @@ class _AutocompleteOptions extends StatelessWidget {
       child: Material(
         elevation: 4,
         child: ConstrainedBox(
-          constraints: const BoxConstraints(
-            maxHeight: 180,
-            maxWidth: 280
-          ),
+          constraints: const BoxConstraints(maxHeight: 180, maxWidth: 280),
           child: ListView.builder(
             padding: EdgeInsets.zero,
             shrinkWrap: true,

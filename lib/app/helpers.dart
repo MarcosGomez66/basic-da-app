@@ -1,6 +1,8 @@
-import 'package:basic_da_app/models/item_model.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+
+//models
+import 'package:basic_da_app/models/item_draft_model.dart';
 
 enum CostType { purchase, budget }
 
@@ -27,7 +29,7 @@ double totalCost(List products) {
   return total;
 }
 
-double totalSold(List<ItemModel> items) {
+double totalSold(List<ItemDraft> items) {
   double total = 0.0;
   for (final i in items) {
     final subTotal = i.unityPrice * i.amount;

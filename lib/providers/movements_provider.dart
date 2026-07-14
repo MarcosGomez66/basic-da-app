@@ -1,24 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:provider/provider.dart';
 
+//models
 import 'package:basic_da_app/models/item_model.dart';
+import 'package:basic_da_app/models/item_draft_model.dart';
 import 'package:basic_da_app/models/product_model.dart';
 import 'package:basic_da_app/models/sale_model.dart';
+
+//providers
+import 'package:basic_da_app/providers/product_provider.dart';
 
 class MovementsProvider extends ChangeNotifier {
   final Box<ProductModel> _productBox = Hive.box<ProductModel>('products');
   final Box<SaleModel> _saleBox = Hive.box<SaleModel>('sales');
 
-  final List<ItemModel> _itemsDraft = [];
-  List<ItemModel> get itemsDraft => List.unmodifiable(_itemsDraft);
+  final List<ItemDraft> _itemsDraft = [];
+
+  List<ItemDraft> get itemsDraft => List.unmodifiable(_itemsDraft);
 
   //borrador venta
-  void addDraft(ItemModel item) {
+  void addDraft(ItemDraft item) {
     _itemsDraft.add(item);
     notifyListeners();
   }
 
-  void updateDraft(ItemModel oldItem, ItemModel newItem) {
+  void updateDraft(ItemDraft oldItem, ItemDraft newItem) {
     final index = _itemsDraft.indexOf(oldItem);
 
     if (index != -1) {
@@ -27,7 +34,7 @@ class MovementsProvider extends ChangeNotifier {
     }
   }
 
-  void removeDraft(ItemModel item) {
+  void removeDraft(ItemDraft item) {
     _itemsDraft.remove(item);
     notifyListeners();
   }
@@ -35,6 +42,21 @@ class MovementsProvider extends ChangeNotifier {
   void clearDraft() {
     _itemsDraft.clear();
     notifyListeners();
+  }
+
+  //products draft
+  double availableStock(ProductModel product) {
+    final reserved = _itemsDraft
+        .where((e) => e.productId == product.id)
+        .fold<double>(0, (sum, e) => sum + e.amount);
+    return product.stock - reserved;
+  }
+
+  double availableStockForEdition(ProductModel product, ItemDraft editing) {
+    final reserved = _itemsDraft
+        .where((e) => e.productId == product.id)
+        .fold<double>(0, (sum, e) => sum + e.amount);
+    return product.stock - reserved + editing.amount;
   }
 
   //venta

@@ -1,5 +1,4 @@
 import 'package:basic_da_app/app/helpers.dart';
-import 'package:basic_da_app/widgets/item_card_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 
@@ -9,9 +8,12 @@ import 'package:basic_da_app/providers/business_provider.dart';
 
 //models
 import 'package:basic_da_app/models/item_model.dart';
+import 'package:basic_da_app/models/item_draft_model.dart';
+import 'package:basic_da_app/models/product_model.dart';
 
 //widget
 import 'package:basic_da_app/widgets/sale_form_widget.dart';
+import 'package:basic_da_app/widgets/item_card_widget.dart';
 
 class SaleScreen extends StatelessWidget {
   const SaleScreen({super.key});
@@ -60,7 +62,7 @@ class SaleScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<ItemModel> itemsDraft = context
+    final List<ItemDraft> itemsDraft = context
         .watch<MovementsProvider>()
         .itemsDraft;
     final String businessId = context
@@ -103,7 +105,7 @@ class SaleScreen extends StatelessWidget {
                 icon: const Icon(Icons.add),
                 onPressed: () async {
                   final movementProvider = context.read<MovementsProvider>();
-                  final item = await showDialog<ItemModel>(
+                  final item = await showDialog(
                     barrierDismissible: false,
                     context: context,
                     builder: (_) => const SaleFormWidget(),
@@ -120,7 +122,7 @@ class SaleScreen extends StatelessWidget {
                     : ListView.builder(
                         itemCount: itemsDraft.length,
                         itemBuilder: (context, index) {
-                          final ItemModel itemDraft = itemsDraft[index];
+                          final ItemDraft itemDraft = itemsDraft[index];
                           return ItemCardWidget(item: itemDraft);
                         },
                       ),
@@ -182,7 +184,8 @@ class SaleScreen extends StatelessWidget {
                     return ElevatedButton(
                       child: Text('Registrar'),
                       onPressed: itemsDraft.isEmpty ? null : () async {
-                        //registra
+                        //registrar
+                        //limpiar lista de productos del borrador en movements providers
                       },
                     );
                   },
