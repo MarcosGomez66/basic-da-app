@@ -5,10 +5,10 @@ import 'package:flutter/material.dart';
 //providers
 import 'package:basic_da_app/providers/movements_provider.dart';
 import 'package:basic_da_app/providers/business_provider.dart';
+import 'package:basic_da_app/providers/workday_provider.dart';
 
 //models
 import 'package:basic_da_app/models/item_model.dart';
-import 'package:basic_da_app/models/item_draft_model.dart';
 import 'package:basic_da_app/models/product_model.dart';
 
 //widget
@@ -62,7 +62,7 @@ class SaleScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<ItemDraft> itemsDraft = context
+    final List<ItemModel> itemsDraft = context
         .watch<MovementsProvider>()
         .itemsDraft;
     final String businessId = context
@@ -122,7 +122,7 @@ class SaleScreen extends StatelessWidget {
                     : ListView.builder(
                         itemCount: itemsDraft.length,
                         itemBuilder: (context, index) {
-                          final ItemDraft itemDraft = itemsDraft[index];
+                          final ItemModel itemDraft = itemsDraft[index];
                           return ItemCardWidget(item: itemDraft);
                         },
                       ),
@@ -184,8 +184,36 @@ class SaleScreen extends StatelessWidget {
                     return ElevatedButton(
                       child: Text('Registrar'),
                       onPressed: itemsDraft.isEmpty ? null : () async {
-                        //registrar
-                        //limpiar lista de productos del borrador en movements providers
+                        final movementProvider = context.read<MovementsProvider>();
+                        final workdayProvider = context.read<WorkdayProvider>();
+                        final workday = workdayProvider.currentWorkday;
+
+                        if (workday == null) {
+                          if (!context.mounted) return;
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('No hay jornada abierta')),
+                          );
+                          return;
+                        }
+
+                        try {
+                          await movementProvider.registerSale(
+                            businessId: businessId,
+                            workdayId: workday.id,
+                            items: itemsDraft,
+                          );
+                          movementProvider.clearDraft();
+                          if (!context.mounted) return;
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Venta registrada')),
+                          );
+                          Navigator.pop(context);
+                        } catch (e) {
+                          if (!context.mounted) return;
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text(e.toString())),
+                          );
+                        }
                       },
                     );
                   },

@@ -1,20 +1,20 @@
-//sale_form_widget.dart
-import 'package:basic_da_app/providers/movements_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:basic_da_app/app/helpers.dart';
 
 //models
-import 'package:basic_da_app/models/item_draft_model.dart';
+import 'package:basic_da_app/models/item_model.dart';
 import 'package:basic_da_app/models/product_model.dart';
 
 //providers
 import 'package:basic_da_app/providers/business_provider.dart';
 import 'package:basic_da_app/providers/product_provider.dart';
+import 'package:basic_da_app/providers/movements_provider.dart';
+
 
 class SaleFormWidget extends StatefulWidget {
-  final ItemDraft? item;
+  final ItemModel? item;
 
   const SaleFormWidget({super.key, this.item});
 
@@ -172,10 +172,9 @@ class _SaleFormWidgetState extends State<SaleFormWidget> {
               );
               return;
             }
-            final item = ItemDraft(
+            final item = ItemModel(
               productId: selectedProduct!.id,
               lotId: selectedProduct!.lotId,
-              productName: selectedProduct!.name,
               amount: double.parse(amountController.text),
               unityPrice: selectedProduct!.price,
             );
@@ -207,13 +206,14 @@ class _AutocompleteOptions extends StatelessWidget {
             itemCount: options.length,
             itemBuilder: (context, index) {
               final option = options.elementAt(index);
+              final available = context.read<MovementsProvider>().availableStock(option);
 
               return ListTile(
                 dense: true,
                 title: Text(option.name),
                 subtitle: Text(option.price.toString()),
-                trailing: Text(context.read<MovementsProvider>().availableStock(option).toString()),
-                onTap: () => onSelected(option),
+                trailing: Text(available.toString()),
+                onTap: available > 0 ? () => onSelected(option) : null,
               );
             },
           ),

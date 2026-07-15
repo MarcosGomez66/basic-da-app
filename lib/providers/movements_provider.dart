@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 
 //models
 import 'package:basic_da_app/models/item_model.dart';
-import 'package:basic_da_app/models/item_draft_model.dart';
 import 'package:basic_da_app/models/product_model.dart';
 import 'package:basic_da_app/models/sale_model.dart';
 
@@ -15,17 +14,17 @@ class MovementsProvider extends ChangeNotifier {
   final Box<ProductModel> _productBox = Hive.box<ProductModel>('products');
   final Box<SaleModel> _saleBox = Hive.box<SaleModel>('sales');
 
-  final List<ItemDraft> _itemsDraft = [];
+  final List<ItemModel> _itemsDraft = [];
 
-  List<ItemDraft> get itemsDraft => List.unmodifiable(_itemsDraft);
+  List<ItemModel> get itemsDraft => List.unmodifiable(_itemsDraft);
 
   //borrador venta
-  void addDraft(ItemDraft item) {
+  void addDraft(ItemModel item) {
     _itemsDraft.add(item);
     notifyListeners();
   }
 
-  void updateDraft(ItemDraft oldItem, ItemDraft newItem) {
+  void updateDraft(ItemModel oldItem, ItemModel newItem) {
     final index = _itemsDraft.indexOf(oldItem);
 
     if (index != -1) {
@@ -34,7 +33,7 @@ class MovementsProvider extends ChangeNotifier {
     }
   }
 
-  void removeDraft(ItemDraft item) {
+  void removeDraft(ItemModel item) {
     _itemsDraft.remove(item);
     notifyListeners();
   }
@@ -52,7 +51,7 @@ class MovementsProvider extends ChangeNotifier {
     return product.stock - reserved;
   }
 
-  double availableStockForEdition(ProductModel product, ItemDraft editing) {
+  double availableStockForEdition(ProductModel product, ItemModel editing) {
     final reserved = _itemsDraft
         .where((e) => e.productId == product.id)
         .fold<double>(0, (sum, e) => sum + e.amount);

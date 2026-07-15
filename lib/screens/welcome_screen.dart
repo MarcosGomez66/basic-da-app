@@ -24,7 +24,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
 
   void createBusiness(String name) {
     final business = BusinessModel(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      id: DateTime.now().microsecondsSinceEpoch.toString(),
       name: name,
       startTime: DateTime.now(),
     );

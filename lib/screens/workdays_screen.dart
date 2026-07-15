@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:basic_da_app/app/helpers.dart';
 //providers
 import 'package:basic_da_app/providers/workday_provider.dart';
 import 'package:basic_da_app/providers/business_provider.dart';
@@ -21,8 +22,8 @@ class WorkdaysScreen extends StatelessWidget {
           final wd = workdays[index];
 
           return ListTile(
-            title: Text(wd.startTime.toString()),
-            subtitle: Text(wd.endTime?.toString() ?? 'Jornada abierta'),
+            title: Text(formatDate(wd.startTime)),
+            subtitle: Text(wd.endTime == null ? 'Jornada abierta' : formatDate(wd.endTime!)),
           );
         },
       ),

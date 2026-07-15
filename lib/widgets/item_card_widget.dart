@@ -8,7 +8,6 @@ import 'package:basic_da_app/app/helpers.dart';
 import 'package:basic_da_app/models/product_draft_model.dart';
 import 'package:basic_da_app/models/product_model.dart';
 import 'package:basic_da_app/models/item_model.dart';
-import 'package:basic_da_app/models/item_draft_model.dart';
 
 // providers
 import 'package:basic_da_app/providers/movements_provider.dart';
@@ -19,7 +18,7 @@ import 'package:basic_da_app/providers/product_provider.dart';
 import 'package:basic_da_app/widgets/product_form_widget.dart';
 
 class ItemCardWidget extends StatelessWidget {
-  final ItemDraft item;
+  final ItemModel item;
 
   const ItemCardWidget({super.key, required this.item});
 
@@ -56,7 +55,7 @@ class ItemCardWidget extends StatelessWidget {
                         icon: Icon(Icons.edit),
                         onPressed: () async {
                           final movementProvider = context.read<MovementsProvider>();
-                          final newItem = await showDialog<ItemDraft>(
+                          final newItem = await showDialog<ItemModel>(
                             context: context,
                             barrierDismissible: false,
                             builder: (_) => SaleFormWidget(item: item,)

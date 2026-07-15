@@ -42,7 +42,6 @@ class EditLotScreen extends StatelessWidget {
               'Lote: ${formatDate(arg.uploadedAt)}',
               style: TextStyle(fontSize: 20),
             ),
-            //boton para agregar producto
             SizedBox(height: 5),
             //lista de productos agregados
             Expanded(
