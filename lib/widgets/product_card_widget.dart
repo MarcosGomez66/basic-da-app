@@ -10,6 +10,7 @@ import 'package:basic_da_app/models/product_model.dart';
 // providers
 import 'package:basic_da_app/providers/draft_provider.dart';
 import 'package:basic_da_app/providers/product_provider.dart';
+import 'package:basic_da_app/providers/movements_provider.dart';
 
 // widgets
 import 'package:basic_da_app/widgets/product_form_widget.dart';
@@ -64,7 +65,7 @@ class ProductDraftCardWidget extends StatelessWidget {
                                 ProductFormWidget(initialProduct: product),
                           );
                           if (newProduct != null) {
-                            draftProvider.update(product, newProduct);
+                            draftProvider.updateProduct(product, newProduct);
                           }
                         },
                       ),
@@ -87,7 +88,7 @@ class ProductDraftCardWidget extends StatelessWidget {
                                 ElevatedButton(
                                   child: Text('Aceptar'),
                                   onPressed: () {
-                                    context.read<DraftProvider>().remove(
+                                    context.read<DraftProvider>().removeProduct(
                                       product,
                                     );
                                     Navigator.pop(context);
@@ -238,8 +239,8 @@ class ProductCardWidget extends StatelessWidget {
                       IconButton(
                         icon: Icon(Icons.block),
                         onPressed: () async {
-                          final productProvider = context
-                              .read<ProductProvider>();
+                          final movementsProvider = context
+                              .read<MovementsProvider>();
                           final controller = TextEditingController(
                             text: product.stock.toString(),
                           );
@@ -290,7 +291,7 @@ class ProductCardWidget extends StatelessWidget {
                             ),
                           );
                           if (result == true) {
-                            await productProvider.wasteProduct(
+                            await movementsProvider.wasteProduct(
                               product: product,
                               amount: subtrahend!,
                             );

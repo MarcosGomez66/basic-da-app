@@ -1,21 +1,14 @@
 import 'package:basic_da_app/widgets/sale_form_widget.dart';
-import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
-import 'package:basic_da_app/app/helpers.dart';
 
 // models
-import 'package:basic_da_app/models/product_draft_model.dart';
 import 'package:basic_da_app/models/product_model.dart';
 import 'package:basic_da_app/models/item_model.dart';
 
 // providers
-import 'package:basic_da_app/providers/movements_provider.dart';
 import 'package:basic_da_app/providers/draft_provider.dart';
 import 'package:basic_da_app/providers/product_provider.dart';
-
-// widgets
-import 'package:basic_da_app/widgets/product_form_widget.dart';
 
 class ItemCardWidget extends StatelessWidget {
   final ItemModel item;
@@ -54,14 +47,14 @@ class ItemCardWidget extends StatelessWidget {
                       IconButton(
                         icon: Icon(Icons.edit),
                         onPressed: () async {
-                          final movementProvider = context.read<MovementsProvider>();
+                          final draftProvider = context.read<DraftProvider>();
                           final newItem = await showDialog<ItemModel>(
                             context: context,
                             barrierDismissible: false,
                             builder: (_) => SaleFormWidget(item: item,)
                           );
                           if (newItem != null) {
-                            movementProvider.updateDraft(item, newItem);
+                            draftProvider.updateItem(item, newItem);
                           }
                         },
                       ),
@@ -83,7 +76,7 @@ class ItemCardWidget extends StatelessWidget {
                                 ElevatedButton(
                                   child: Text('Aceptar'),
                                   onPressed: () {
-                                    context.read<MovementsProvider>().removeDraft(item);
+                                    context.read<DraftProvider>().removeItem(item);
                                     Navigator.pop(context);
                                   },
                                 )

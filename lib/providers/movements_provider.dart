@@ -1,61 +1,55 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
-import 'package:provider/provider.dart';
 
 //models
-import 'package:basic_da_app/models/item_model.dart';
+import 'package:basic_da_app/models/lot_model.dart';
 import 'package:basic_da_app/models/product_model.dart';
+import 'package:basic_da_app/models/item_model.dart';
 import 'package:basic_da_app/models/sale_model.dart';
-
-//providers
-import 'package:basic_da_app/providers/product_provider.dart';
+import 'package:basic_da_app/models/waste_model.dart';
 
 class MovementsProvider extends ChangeNotifier {
+  final Box<LotModel> _lotBox = Hive.box<LotModel>('lots');
   final Box<ProductModel> _productBox = Hive.box<ProductModel>('products');
   final Box<SaleModel> _saleBox = Hive.box<SaleModel>('sales');
+  final Box<WasteModel> _wasteBox = Hive.box<WasteModel>('wastes');
 
-  final List<ItemModel> _itemsDraft = [];
+  //lotes
+  LotModel? _currentLot;
 
-  List<ItemModel> get itemsDraft => List.unmodifiable(_itemsDraft);
+  LotModel? get currentLot => _currentLot;
 
-  //borrador venta
-  void addDraft(ItemModel item) {
-    _itemsDraft.add(item);
+  Future<void> createLot(LotModel lot) async {
+    await _lotBox.put(lot.id, lot);
+    _currentLot = lot;
     notifyListeners();
   }
 
-  void updateDraft(ItemModel oldItem, ItemModel newItem) {
-    final index = _itemsDraft.indexOf(oldItem);
+  Future<void> clearCurrentLot() async {
+    _currentLot = null;
+    notifyListeners();
+  }
 
-    if (index != -1) {
-      _itemsDraft[index] = newItem;
-      notifyListeners();
+  Future<void> deactivateLot(LotModel lot) async {
+    lot.isActive = false;
+    lot.endedAt = DateTime.now();
+    await lot.save();
+    final products = _productBox.values
+        .where((p) => p.lotId == lot.id && p.isActive)
+        .toList();
+    for (final product in products) {
+      product.isActive = false;
+      product.endedAt = lot.endedAt;
+      await product.save();
     }
-  }
-
-  void removeDraft(ItemModel item) {
-    _itemsDraft.remove(item);
     notifyListeners();
   }
 
-  void clearDraft() {
-    _itemsDraft.clear();
-    notifyListeners();
-  }
-
-  //products draft
-  double availableStock(ProductModel product) {
-    final reserved = _itemsDraft
-        .where((e) => e.productId == product.id)
-        .fold<double>(0, (sum, e) => sum + e.amount);
-    return product.stock - reserved;
-  }
-
-  double availableStockForEdition(ProductModel product, ItemModel editing) {
-    final reserved = _itemsDraft
-        .where((e) => e.productId == product.id)
-        .fold<double>(0, (sum, e) => sum + e.amount);
-    return product.stock - reserved + editing.amount;
+  List<LotModel> getLotByBusiness(String businessId) {
+    return _lotBox.values
+        .where((lot) => lot.businessId == businessId && lot.isActive)
+        .toList()
+      ..sort((a, b) => b.uploadedAt.compareTo(a.uploadedAt));
   }
 
   //venta
@@ -124,5 +118,44 @@ class MovementsProvider extends ChangeNotifier {
         .toList();
     sales.sort((a, b) => b.soldAt.compareTo(a.soldAt));
     return sales;
+  }
+
+  //merma
+  Future<void> wasteProduct({
+    required ProductModel product,
+    required double amount,
+  }) async {
+    final waste = WasteModel(
+      id: DateTime.now().microsecondsSinceEpoch.toString(),
+      businessId: product.businessId,
+      items: [
+        ItemModel(
+          productId: product.id,
+          lotId: product.lotId,
+          amount: amount,
+          unityPrice: product.price,
+        ),
+      ],
+      totalWaste: amount * product.price,
+      wastedAt: DateTime.now(),
+    );
+
+    product.stock -= amount;
+    if (product.stock <= 0.0) {
+      product.stock = 0.0;
+      product.isActive = false;
+      product.endedAt = DateTime.now();
+    }
+    await product.save();
+    await _wasteBox.put(waste.id, waste);
+    notifyListeners();
+  }
+
+  List<WasteModel> getWastesByBusiness(String businessId) {
+    final wastes = _wasteBox.values
+        .where((w) => w.businessId == businessId)
+        .toList();
+    wastes.sort((a, b) => b.wastedAt.compareTo(a.wastedAt));
+    return wastes;
   }
 }

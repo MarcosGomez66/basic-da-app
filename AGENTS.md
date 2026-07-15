@@ -1,62 +1,184 @@
-# basic_da_app
+# Basic DataAnalysis app
 
-Offline-first Flutter app for small business data analysis. Portfolio project — keep it simple.
+## Proyecto
 
-## Commands
+Aplicación móvil desarrollada en Fluter para la gestión de pequeños negocios, que ofrece una forma
+simple de visualización de datos.
 
-```bash
-flutter analyze        # lint (flutter_lints)
-flutter test           # unit tests (no integration tests yet)
-flutter pub get        # after pubspec changes
-dart run build_runner build --delete-conflicting-outputs  # regenerate Hive adapters
-```
+## Características principales
 
-No CI workflows exist. No opencode.json or other agent config files exist.
+- Crear uno o varios negocios para registrar los datos de forma independiente entre sí.
+- Registrar productos agrupados en lotes desde un borrador.
+- Iniciar y finalizar jornadas de ventas.
+- Resistrar ventas de uno o varios productos, solo si existe una jornada abierta.
+- Pantalla de resumen o inicio que muestra tres bloques; Estado de la jornada, total vendido de la
+  jornada actual o última jornada en caso de no tener una abierta, y alertas de bajo stock de
+  productos según su cantidad mínima registrada.
 
-## Architecture
+## Otras características
 
-```
+- Modificar nombre, grupo y stock minimo de un producto.
+- Mermar productos.
+- En formularios de registro, seleccionar productos o grupos ya registrados con un autocompletado.
+- Visualizar lista de jornadas.
+- Visualizar lista de lotes y filtrar entre activo o no.
+- Visualizar lista de movimientos y filtrar entre ingreso(lote), venta o merma.
+
+## Visualización de datos
+
+- De cada jornada, un gráfico de líneas que muestre las horas en X y la cantidad de unidades
+  vendidas en Y de cada producto vendido, un gráfico circular que muestre la cantidad de dinero
+  ingresado de cada producto o grupo según el total, un gráfico de barras que muestre la cantidad de
+  dinero ingresado con la diferencia de ganancia en el eje X y el producto o grupo en el eje Y.
+- En la pantalla Dashboard, un gráfico de líneas que muestre las horas, días de la semana o mes
+  según selección en el eje X y la cantidad de unidades vendidas de cada producto en el eje Y, un
+  gráfico circular de los 10 productos o grupos más rentables del negocio, es decir, generaron más
+  ganancia, un gráfico de barras con la cantidad de dinero ingresado con la diferencia de ganancia
+  en el eje X y el producto o grupo en el eje Y, agrupados en semanas o meses según selección.
+- De cada lote, mostrar un gráfico de progresión con el avance que registran las ganancias de los
+  productos ya vendidos según el estimado total del lote, un gráfico que muestre la ganancia
+  estimada con la diferencia que lleva vendiendo en el eje X y el producto en el eje Y.
+
+## Tecnologías
+
+- Flutter
+- Dart
+- Hive
+- Provider
+- Material Design 3
+- fl_chart
+
+## Detalles del proyecto
+
+- Es un proyecto de portafolio, mantener siempre simple y fácil de entender.
+- Diseño pensado para funcionar completamente offline.
+- Mostrar siempre los formularios con showDialog/AlertDialog si es posible.
+- Priorizar widget pequeños y reutilizables.
+- Hive es la única base de datos.
+- Estructurar los métodos providers también como services.
+- Los modelos guardan su propia id como llave en Hive.
+- Permitir autocompletar formularios con el widget Autocomplete en los campos de nombre y grupo.
+- Solo puede existir una jornada abierta por negocio.
+- Cada producto pertenece a un negocio y a un lote.
+- Los ids se generan con DateTime.now().microsecondsSinceEpoch()
+
+## Arquitectura
+
+Se utiliza una arquitectura simple basada en:
+
 lib/
-  main.dart            # Hive init, adapter registration, box opening, Provider setup
-  app/
-    app.dart           # MaterialApp, theme, routes
-    routes.dart        # named route map (initialRoute: '/')
-    main_layout.dart   # IndexedStack with BottomAppBar nav (4 tabs + FAB for sale)
-    helpers.dart       # CostType enum, totalPrice/totalCost/totalSold, validators, formatDate
-  models/              # Hive models with @HiveType + generated .g.dart adapters
-  providers/           # ChangeNotifier providers (act as service layer)
-  screens/             # Full-screen views
-  widgets/             # Reusable form widgets
-```
+app/
+models/
+provider/
+screens/
+widgets/
 
-Entry: `main.dart` → initializes Hive, registers all adapters, opens all boxes, wraps `MyApp` in `MultiProvider`.
+## Modelos
 
-## Key domain rules
+### BusinessModel
 
-- One open workday per business at a time.
-- Each product belongs to a business and a lot. Lots can be deactivated (cascades to products).
-- IDs: `DateTime.now().microsecondsSinceEpoch.toString()` — never use random/UUID.
-- CostType enum: `purchase` (per-unit cost) vs `budget` (fixed total cost).
-- Stock can reach 0; product is auto-deactivated when stock ≤ 0.
-- Locale: Spanish (`es`), dates formatted as `dd/MMM/yyyy HH:mm`.
+- String id
+- String name
+- DateTime startTime
 
-## Hive adapter gotchas
+### WorkdayModel
 
-- Every model uses `part '*.g.dart'` with `@HiveType`/`@HiveField` annotations.
-- Adapters are registered manually in `main.dart` — **do not change typeId values** or field indices on existing adapters.
-- `CostTypeAdapter` (typeId 5) is in `helpers.dart` (the `CostType` enum lives there).
-- If adding a new model: add `@HiveType`, run `build_runner`, register the adapter in `main.dart`, open the box, and add to `MultiProvider` if needed.
-- If modifying an existing model's fields: use the **next available** `@HiveField` index. Never reuse or reorder indices.
+- String id
+- String businessId
+- bool isOpen
+- DateTime startTime
+- DateTime endTime
 
-## UI conventions
+### LotModel
 
-- Forms are shown via `showDialog` / `AlertDialog`.
-- Autocomplete for name/group fields uses `RawAutocomplete<String>` with existing products as options.
-- Navigation: named routes for non-tab screens; `IndexedStack` for the 4 main tabs.
-- Material Design 3, `Colors.deepPurple` as seed color.
+- String id
+- String businessId
+- double totalPrice
+- double totalCost
+- double totalArticles
+- bool isActive
+- DateTime uploadedAt
+- DateTime endedAt
 
-## Test notes
+### ProductModel
 
-- Tests use `flutter_test` + `flutter_test`-based Hive initialization.
-- `movements_provider_test.dart` initializes Hive with a temp directory — this is the pattern to follow for tests needing Hive.
-- `models_test.dart` tests pure helper functions without Hive.
+- String id
+- String businessId
+- String lotId
+- String name
+- String group
+- double stock
+- double minStock
+- double price
+- CostType costType
+- double cost
+- bool isActive
+- DateTime uploadedAt
+- DateTime endedAt
+
+### SaleModel
+
+- String id
+- String businessId
+- String workdayId
+- List<ItemModel> items
+- double totalSold
+- DateTime soldAt
+
+### WasteModel
+
+- String id
+- String businessId
+- List<ItemModel> items
+- double totalWaste
+- DateTime wastedAt
+
+### ItemModel
+
+- String productId
+- String lotId
+- double amount
+- double unityPrice
+
+### ProductDraftModel
+
+- String name
+- String group
+- double stock
+- double minStock
+- double price
+- CostType costType
+- double cost
+
+## Buenas prácticas
+
+- Evitar lógica de negocio en build().
+- No ejecutar operaciones pesadas en build().
+- Utilizar dispose() para liberar controladores.
+- Mantener widgets Stateless cuando sea posible.
+- Preferir const constructors.
+- Utilizar late únicamente cuando sea necesario.
+- Manejar errores de Hive mediante try/catch.
+
+## Reglas para IA
+
+Cuando se solicite código:
+
+- respetar la arquitectura existente.
+- no introducir nuevas dependencias sin justificarlo.
+- priorizar soluciones sencillas.
+- reutilizar widgets existentes.
+- mantener compatibilidad con Hive.
+- evitar romper adapters ya desplegados.
+- comentar únicamente código complejo.
+
+Cuando se propongan cambios:
+
+- explicar ventajas.
+- explicar posibles impactos sobre datos persistidos.
+- indicar si requiere migración de Hive.
+
+## Objetivo del proyecto
+
+Construir una aplicación ligera, offline-first, mantenible y fácil de extender, enfocada en pequeños
+comercios y emprendimientos.

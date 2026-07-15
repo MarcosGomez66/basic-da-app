@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:basic_da_app/providers/business_provider.dart';
-import 'package:basic_da_app/screens/movements_history_screen.dart';
 import 'package:provider/provider.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -30,7 +29,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             ElevatedButton.icon(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.pushNamed(context, '/movements_history');
+              },
               icon: const Icon(Icons.history),
               label: const Text('Ver historial de movimientos'),
             ),

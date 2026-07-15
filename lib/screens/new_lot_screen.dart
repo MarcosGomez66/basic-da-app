@@ -4,6 +4,7 @@ import 'package:basic_da_app/app/helpers.dart';
 
 //providers
 import 'package:basic_da_app/providers/draft_provider.dart';
+import 'package:basic_da_app/providers/movements_provider.dart';
 import 'package:basic_da_app/providers/product_provider.dart';
 import 'package:basic_da_app/providers/business_provider.dart';
 
@@ -50,7 +51,7 @@ class NewLotScreen extends StatelessWidget {
   Future<void> _exitLotScreen(BuildContext context) async {
     final draftProvider = context.read<DraftProvider>();
 
-    if (draftProvider.products.isEmpty) {
+    if (draftProvider.productDrafts.isEmpty) {
       Navigator.pop(context);
       return;
     }
@@ -59,13 +60,13 @@ class NewLotScreen extends StatelessWidget {
 
     if (!context.mounted || !shouldDiscard) return;
 
-    draftProvider.clear();
+    draftProvider.clearProducts();
     Navigator.pop(context);
   }
 
   @override
   Widget build(BuildContext context) {
-    final List<ProductDraft> products = context.watch<DraftProvider>().products;
+    final List<ProductDraft> products = context.watch<DraftProvider>().productDrafts;
     final String businessId = context
         .watch<BusinessProvider>()
         .selectedBusiness!
@@ -111,7 +112,7 @@ class NewLotScreen extends StatelessWidget {
                   );
 
                   if (product != null) {
-                    draftProvider.add(product);
+                    draftProvider.addProduct(product);
                   }
                 },
                 label: Text('Agregar producto'),
@@ -180,15 +181,15 @@ class NewLotScreen extends StatelessWidget {
                             ),
                           );
                           if (result == true) {
-                            draftProvider.clear();
+                            draftProvider.clearProducts();
                           }
                         },
                   child: Text('Limpiar'),
                 ),
               ),
               Expanded(
-                child: Consumer<ProductProvider>(
-                  builder: (context, productProvider, child) {
+                child: Consumer<MovementsProvider>(
+                  builder: (context, movementsProvider, child) {
                     return ElevatedButton(
                       onPressed: products.isEmpty
                           ? null
@@ -233,15 +234,20 @@ class NewLotScreen extends StatelessWidget {
                                   ),
                                   uploadedAt: DateTime.now(),
                                 );
-                                await productProvider.createLot(newLot);
+                                await movementsProvider.createLot(newLot);
                                 //subir productos
-                                final newProducts = productProvider
-                                    .createProducts(products, businessId);
-                                await productProvider.uploadProducts(
-                                  newProducts,
-                                );
-                                productProvider.clearCurrentLot();
-                                draftProvider.clear();
+                                final newProducts = context
+                                    .read<ProductProvider>()
+                                    .createProducts(
+                                      products,
+                                      businessId,
+                                      movementsProvider.currentLot!.id,
+                                    );
+                                await context
+                                    .read<ProductProvider>()
+                                    .uploadProducts(newProducts);
+                                await movementsProvider.clearCurrentLot();
+                                draftProvider.clearProducts();
                                 if (context.mounted) {
                                   Navigator.pop(context);
                                 }

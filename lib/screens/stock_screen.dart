@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:basic_da_app/app/helpers.dart';
 
 //providers
-import 'package:basic_da_app/providers/product_provider.dart';
+import 'package:basic_da_app/providers/movements_provider.dart';
 import 'package:basic_da_app/providers/business_provider.dart';
 
 class StockScreen extends StatelessWidget {
@@ -12,7 +12,7 @@ class StockScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final business = context.watch<BusinessProvider>().selectedBusiness;
-    final lots = context.watch<ProductProvider>().getLotByBusiness(
+    final lots = context.watch<MovementsProvider>().getLotByBusiness(
       business!.id,
     );
 

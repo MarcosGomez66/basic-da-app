@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:basic_da_app/screens/summary_screen.dart';
 import 'package:basic_da_app/screens/dashboard_screen.dart';
 import 'package:basic_da_app/screens/stock_screen.dart';
-import 'package:basic_da_app/screens/settings_screen.dart';
+import 'package:basic_da_app/screens/extra_screen.dart';
 import 'package:basic_da_app/screens/sale_screen.dart';
 //providers
 import 'package:basic_da_app/providers/workday_provider.dart';

@@ -7,6 +7,8 @@ import 'package:basic_da_app/models/item_model.dart';
 import 'package:basic_da_app/models/product_draft_model.dart';
 import 'package:basic_da_app/models/product_model.dart';
 import 'package:basic_da_app/models/sale_model.dart';
+import 'package:basic_da_app/models/lot_model.dart';
+import 'package:basic_da_app/models/waste_model.dart';
 import 'package:basic_da_app/providers/movements_provider.dart';
 
 void main() {
@@ -21,9 +23,13 @@ void main() {
     Hive.registerAdapter(CostTypeAdapter());
     Hive.registerAdapter(ItemModelAdapter());
     Hive.registerAdapter(SaleModelAdapter());
+    Hive.registerAdapter(LotModelAdapter());
+    Hive.registerAdapter(WasteModelAdapter());
 
     await Hive.openBox<ProductModel>('products');
     await Hive.openBox<SaleModel>('sales');
+    await Hive.openBox<LotModel>('lots');
+    await Hive.openBox<WasteModel>('wastes');
   });
 
   tearDown(() async {

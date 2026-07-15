@@ -10,7 +10,7 @@ import 'package:basic_da_app/models/product_model.dart';
 //providers
 import 'package:basic_da_app/providers/business_provider.dart';
 import 'package:basic_da_app/providers/product_provider.dart';
-import 'package:basic_da_app/providers/movements_provider.dart';
+import 'package:basic_da_app/providers/draft_provider.dart';
 
 
 class SaleFormWidget extends StatefulWidget {
@@ -122,7 +122,7 @@ class _SaleFormWidgetState extends State<SaleFormWidget> {
                 ],
                 decoration: InputDecoration(labelText: 'Cantidad'),
                 validator: (value) {
-                  final movementProvider = context.read<MovementsProvider>();
+                  final draftProvider = context.read<DraftProvider>();
 
                   if (selectedProduct == null) {
                     return "Seleccione un producto";
@@ -135,8 +135,8 @@ class _SaleFormWidgetState extends State<SaleFormWidget> {
                   }
 
                   final max = widget.item == null
-                      ? movementProvider.availableStock(selectedProduct!)
-                      : movementProvider.availableStockForEdition(
+                      ? draftProvider.availableStock(selectedProduct!)
+                      : draftProvider.availableStockForEdition(
                           selectedProduct!,
                           widget.item!,
                         );
@@ -206,7 +206,7 @@ class _AutocompleteOptions extends StatelessWidget {
             itemCount: options.length,
             itemBuilder: (context, index) {
               final option = options.elementAt(index);
-              final available = context.read<MovementsProvider>().availableStock(option);
+              final available = context.read<DraftProvider>().availableStock(option);
 
               return ListTile(
                 dense: true,

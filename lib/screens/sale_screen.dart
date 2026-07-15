@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 //providers
 import 'package:basic_da_app/providers/movements_provider.dart';
+import 'package:basic_da_app/providers/draft_provider.dart';
 import 'package:basic_da_app/providers/business_provider.dart';
 import 'package:basic_da_app/providers/workday_provider.dart';
 
@@ -45,9 +46,9 @@ class SaleScreen extends StatelessWidget {
   }
 
   Future<void> _exitSaleScreen(BuildContext context) async {
-    final movementProvider = context.read<MovementsProvider>();
+    final draftProvider = context.read<DraftProvider>();
 
-    if (movementProvider.itemsDraft.isEmpty) {
+    if (draftProvider.itemDrafts.isEmpty) {
       Navigator.pop(context);
       return;
     }
@@ -56,15 +57,15 @@ class SaleScreen extends StatelessWidget {
 
     if (!context.mounted || !shouldDiscard) return;
 
-    movementProvider.clearDraft();
+    draftProvider.clearItems();
     Navigator.pop(context);
   }
 
   @override
   Widget build(BuildContext context) {
     final List<ItemModel> itemsDraft = context
-        .watch<MovementsProvider>()
-        .itemsDraft;
+        .watch<DraftProvider>()
+        .itemDrafts;
     final String businessId = context
         .watch<BusinessProvider>()
         .selectedBusiness!
@@ -104,14 +105,14 @@ class SaleScreen extends StatelessWidget {
                 label: Text('Agregar producto'),
                 icon: const Icon(Icons.add),
                 onPressed: () async {
-                  final movementProvider = context.read<MovementsProvider>();
+                  final draftProvider = context.read<DraftProvider>();
                   final item = await showDialog(
                     barrierDismissible: false,
                     context: context,
                     builder: (_) => const SaleFormWidget(),
                   );
                   if (item != null) {
-                    movementProvider.addDraft(item);
+                    draftProvider.addItem(item);
                   }
                 },
               ),
@@ -146,8 +147,8 @@ class SaleScreen extends StatelessWidget {
                   onPressed: itemsDraft.isEmpty
                       ? null
                       : () async {
-                          final movementProvider = context
-                              .read<MovementsProvider>();
+                          final draftProvider = context
+                              .read<DraftProvider>();
                           final result = await showDialog(
                             context: context,
                             barrierDismissible: false,
@@ -173,17 +174,18 @@ class SaleScreen extends StatelessWidget {
                             ),
                           );
                           if (result == true) {
-                            movementProvider.clearDraft();
+                            draftProvider.clearItems();
                           }
                         },
                 ),
               ),
               Expanded(
-                child: Consumer<MovementsProvider>(
-                  builder: (context, movementProvider, child) {
+                child: Consumer<DraftProvider>(
+                  builder: (context, draftProvider, child) {
                     return ElevatedButton(
                       child: Text('Registrar'),
                       onPressed: itemsDraft.isEmpty ? null : () async {
+                        final draftProvider = context.read<DraftProvider>();
                         final movementProvider = context.read<MovementsProvider>();
                         final workdayProvider = context.read<WorkdayProvider>();
                         final workday = workdayProvider.currentWorkday;
@@ -202,7 +204,7 @@ class SaleScreen extends StatelessWidget {
                             workdayId: workday.id,
                             items: itemsDraft,
                           );
-                          movementProvider.clearDraft();
+                          draftProvider.clearItems();
                           if (!context.mounted) return;
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(content: Text('Venta registrada')),

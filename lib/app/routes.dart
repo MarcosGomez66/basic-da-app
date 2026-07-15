@@ -15,5 +15,5 @@ final Map<String, WidgetBuilder> appRoutes = {
   '/new_lot': (context) => const NewLotScreen(),
   '/edit_lot': (context) => const EditLotScreen(),
   '/sale': (context) => const SaleScreen(),
-  //'/movements_history': (context) => const MovementsHistoryScreen(),
+  '/movements_history': (context) => const MovementsHistoryScreen(),
 };

@@ -4,6 +4,7 @@ import 'package:basic_da_app/app/helpers.dart';
 
 //providers
 import 'package:basic_da_app/providers/product_provider.dart';
+import 'package:basic_da_app/providers/movements_provider.dart';
 
 //widgets
 import 'package:basic_da_app/widgets/product_card_widget.dart';
@@ -80,7 +81,7 @@ class EditLotScreen extends StatelessWidget {
                 onPressed: products.isEmpty
                     ? null
                     : () async {
-                        final productProvider = context.read<ProductProvider>();
+                        final movementsProvider = context.read<MovementsProvider>();
                         final result = await showDialog(
                           context: context,
                           barrierDismissible: false,
@@ -106,7 +107,7 @@ class EditLotScreen extends StatelessWidget {
                           ),
                         );
                         if (result == true) {
-                          await productProvider.deactivateLot(arg);
+                          await movementsProvider.deactivateLot(arg);
                           if (context.mounted) {
                             Navigator.pop(context);
                           }
