@@ -9,6 +9,7 @@ import 'package:basic_da_app/providers/product_provider.dart';
 import 'package:basic_da_app/providers/business_provider.dart';
 
 //widgets
+import 'package:basic_da_app/widgets/confirm_dialog.dart';
 import 'package:basic_da_app/widgets/product_form_widget.dart';
 import 'package:basic_da_app/widgets/product_card_widget.dart';
 
@@ -19,35 +20,6 @@ import 'package:basic_da_app/models/lot_model.dart';
 class NewLotScreen extends StatelessWidget {
   const NewLotScreen({super.key});
 
-  Future<bool> _confirmDiscardDraft(BuildContext context) async {
-    final result = await showDialog<bool>(
-      context: context,
-      barrierDismissible: false,
-      builder: (_) => AlertDialog(
-        title: Text('Salir'),
-        content: Text(
-          'Se borrara todo el contenido no registrado, Desea continuar?',
-        ),
-        actions: [
-          TextButton(
-            child: Text('Cancelar'),
-            onPressed: () {
-              Navigator.pop(context, false);
-            },
-          ),
-          ElevatedButton(
-            child: Text('Aceptar'),
-            onPressed: () {
-              Navigator.pop(context, true);
-            },
-          ),
-        ],
-      ),
-    );
-
-    return result ?? false;
-  }
-
   Future<void> _exitLotScreen(BuildContext context) async {
     final draftProvider = context.read<DraftProvider>();
 
@@ -56,7 +28,11 @@ class NewLotScreen extends StatelessWidget {
       return;
     }
 
-    final shouldDiscard = await _confirmDiscardDraft(context);
+    final shouldDiscard = await ConfirmDialog.show(
+      context,
+      title: 'Salir',
+      message: 'Se borrara todo el contenido no registrado, Desea continuar?',
+    );
 
     if (!context.mounted || !shouldDiscard) return;
 
@@ -66,7 +42,9 @@ class NewLotScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<ProductDraft> products = context.watch<DraftProvider>().productDrafts;
+    final List<ProductDraft> products = context
+        .watch<DraftProvider>()
+        .productDrafts;
     final String businessId = context
         .watch<BusinessProvider>()
         .selectedBusiness!
@@ -81,74 +59,69 @@ class NewLotScreen extends StatelessWidget {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text('Nuevo lote'),
-          backgroundColor: Colors.blueAccent,
+          title: const Text('Nuevo lote'),
           leading: IconButton(
-            icon: Icon(Icons.arrow_back),
+            icon: const Icon(Icons.arrow_back),
             onPressed: () => _exitLotScreen(context),
           ),
         ),
-        body: Container(
-          padding: EdgeInsets.all(12),
-          margin: EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: Colors.lightBlue,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              //titulo
-              Text('Lote: $now', style: TextStyle(fontSize: 20)),
-              //boton para agregar producto
-              ElevatedButton.icon(
-                onPressed: () async {
-                  final draftProvider = context.read<DraftProvider>();
-                  final product = await showDialog<ProductDraft>(
-                    barrierDismissible: false,
-                    context: context,
-                    builder: (_) => const ProductFormWidget(),
-                  );
+        body: Card(
+          margin: const EdgeInsets.all(12),
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  'Lote: $now',
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+                const SizedBox(height: 8),
+                ElevatedButton.icon(
+                  onPressed: () async {
+                    final draftProvider = context.read<DraftProvider>();
+                    final product = await showDialog<ProductDraft>(
+                      barrierDismissible: false,
+                      context: context,
+                      builder: (_) => const ProductFormWidget(),
+                    );
 
-                  if (product != null) {
-                    draftProvider.addProduct(product);
-                  }
-                },
-                label: Text('Agregar producto'),
-                icon: const Icon(Icons.add),
-              ),
-              //lista de productos agregados
-              Expanded(
-                child: products.isEmpty
-                    ? const Center(child: Text('No hay productos'))
-                    : ListView.builder(
-                        itemCount: products.length,
-                        itemBuilder: (context, index) {
-                          final ProductDraft product = products[index];
-
-                          return ProductDraftCardWidget(product: product);
-                        },
-                      ),
-              ),
-              //totales
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Text('Precio total de venta: ${totalPrice(products)}'),
-                  Text('Precio total de compra: ${totalCost(products)}'),
-                  Text(
-                    'Ganancia esperada: ${(totalPrice(products) - totalCost(products)).toString()}',
-                  ),
-                ],
-              ),
-            ],
+                    if (product != null) {
+                      draftProvider.addProduct(product);
+                    }
+                  },
+                  label: const Text('Agregar producto'),
+                  icon: const Icon(Icons.add),
+                ),
+                Expanded(
+                  child: products.isEmpty
+                      ? const Center(child: Text('No hay productos'))
+                      : ListView.builder(
+                          itemCount: products.length,
+                          itemBuilder: (context, index) {
+                            final ProductDraft product = products[index];
+                            return ProductDraftCardWidget(product: product);
+                          },
+                        ),
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text('Precio total de venta: ${totalPrice(products)}'),
+                    Text('Precio total de compra: ${totalCost(products)}'),
+                    Text(
+                      'Ganancia esperada: ${(totalPrice(products) - totalCost(products)).toString()}',
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
         bottomNavigationBar: BottomAppBar(
-          height: 60,
+          height: 68,
           child: Row(
-            spacing: 20,
+            spacing: 16,
             children: [
               Expanded(
                 child: ElevatedButton(
@@ -156,35 +129,17 @@ class NewLotScreen extends StatelessWidget {
                       ? null
                       : () async {
                           final draftProvider = context.read<DraftProvider>();
-                          final result = await showDialog(
-                            context: context,
-                            barrierDismissible: false,
-                            builder: (_) => AlertDialog(
-                              title: Text('Limpiar'),
-                              content: Text(
+                          final result = await ConfirmDialog.show(
+                            context,
+                            title: 'Limpiar',
+                            message:
                                 'Se borrara todo el contenido no registrado, desea continuar?',
-                              ),
-                              actions: [
-                                TextButton(
-                                  child: Text('Cancelar'),
-                                  onPressed: () {
-                                    Navigator.pop(context, false);
-                                  },
-                                ),
-                                ElevatedButton(
-                                  child: Text('Aceptar'),
-                                  onPressed: () {
-                                    Navigator.pop(context, true);
-                                  },
-                                ),
-                              ],
-                            ),
                           );
-                          if (result == true) {
+                          if (result) {
                             draftProvider.clearProducts();
                           }
                         },
-                  child: Text('Limpiar'),
+                  child: const Text('Limpiar'),
                 ),
               ),
               Expanded(
@@ -196,32 +151,13 @@ class NewLotScreen extends StatelessWidget {
                           : () async {
                               final draftProvider = context
                                   .read<DraftProvider>();
-                              final result = await showDialog(
-                                context: context,
-                                barrierDismissible: false,
-                                builder: (_) => AlertDialog(
-                                  title: Text('Registrar'),
-                                  content: Text(
+                              final result = await ConfirmDialog.show(
+                                context,
+                                title: 'Registrar',
+                                message:
                                     'Se registraran los productos de forma permanente, desea continuar?',
-                                  ),
-                                  actions: [
-                                    TextButton(
-                                      child: Text('Cancelar'),
-                                      onPressed: () {
-                                        Navigator.pop(context, false);
-                                      },
-                                    ),
-                                    ElevatedButton(
-                                      child: Text('Aceptar'),
-                                      onPressed: () {
-                                        Navigator.pop(context, true);
-                                      },
-                                    ),
-                                  ],
-                                ),
                               );
-                              if (result == true) {
-                                //crear lote
+                              if (result) {
                                 final newLot = LotModel(
                                   id: DateTime.now().microsecondsSinceEpoch
                                       .toString(),
@@ -235,7 +171,6 @@ class NewLotScreen extends StatelessWidget {
                                   uploadedAt: DateTime.now(),
                                 );
                                 await movementsProvider.createLot(newLot);
-                                //subir productos
                                 final newProducts = context
                                     .read<ProductProvider>()
                                     .createProducts(
@@ -253,7 +188,7 @@ class NewLotScreen extends StatelessWidget {
                                 }
                               }
                             },
-                      child: Text('Registrar'),
+                      child: const Text('Registrar'),
                     );
                   },
                 ),

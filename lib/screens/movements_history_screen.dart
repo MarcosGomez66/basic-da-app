@@ -45,37 +45,35 @@ class _MovementsHistoryScreenState extends State<MovementsHistoryScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Historial de movimientos'),
-        backgroundColor: Colors.blueAccent,
+        title: const Text('Historial de movimientos'),
       ),
       body: Column(
         children: [
-          //filtros
           Padding(
             padding: const EdgeInsets.all(12),
             child: Wrap(
               spacing: 8,
               children: [
                 FilterChip(
-                  label: Text('Todos'),
+                  label: const Text('Todos'),
                   selected: _selectedFilter == MovementFilter.all,
                   onSelected: (_) =>
                       setState(() => _selectedFilter = MovementFilter.all),
                 ),
                 FilterChip(
-                  label: Text('Lotes'),
+                  label: const Text('Lotes'),
                   selected: _selectedFilter == MovementFilter.lot,
                   onSelected: (_) =>
                       setState(() => _selectedFilter = MovementFilter.lot),
                 ),
                 FilterChip(
-                  label: Text('Ventas'),
+                  label: const Text('Ventas'),
                   selected: _selectedFilter == MovementFilter.sale,
                   onSelected: (_) =>
                       setState(() => _selectedFilter = MovementFilter.sale),
                 ),
                 FilterChip(
-                  label: Text('Mermas'),
+                  label: const Text('Mermas'),
                   selected: _selectedFilter == MovementFilter.waste,
                   onSelected: (_) =>
                       setState(() => _selectedFilter = MovementFilter.waste),
@@ -83,7 +81,6 @@ class _MovementsHistoryScreenState extends State<MovementsHistoryScreen> {
               ],
             ),
           ),
-          //lista
           Expanded(
             child: _buildList(filteredLots, filteredSales, filteredWastes),
           ),
@@ -103,7 +100,6 @@ class _MovementsHistoryScreenState extends State<MovementsHistoryScreen> {
         for (final lot in lots)
           _MovementCard(
             icon: Icons.inventory_2,
-            iconColor: Colors.blue,
             title: 'Lote registrado',
             date: lot.uploadedAt,
             details: [
@@ -114,7 +110,6 @@ class _MovementsHistoryScreenState extends State<MovementsHistoryScreen> {
         for (final sale in sales)
           _MovementCard(
             icon: Icons.point_of_sale,
-            iconColor: Colors.green,
             title: 'Venta registrada',
             date: sale.soldAt,
             details: [
@@ -125,7 +120,6 @@ class _MovementsHistoryScreenState extends State<MovementsHistoryScreen> {
         for (final waste in wastes)
           _MovementCard(
             icon: Icons.delete_outline,
-            iconColor: Colors.red,
             title: 'Merma registrada',
             date: waste.wastedAt,
             details: [
@@ -140,14 +134,12 @@ class _MovementsHistoryScreenState extends State<MovementsHistoryScreen> {
 
 class _MovementCard extends StatelessWidget {
   final IconData icon;
-  final Color iconColor;
   final String title;
   final DateTime date;
   final List<String> details;
 
   const _MovementCard({
     required this.icon,
-    required this.iconColor,
     required this.title,
     required this.date,
     required this.details,
@@ -155,6 +147,18 @@ class _MovementCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
+    final Color iconColor;
+    if (icon == Icons.inventory_2) {
+      iconColor = colorScheme.primary;
+    } else if (icon == Icons.point_of_sale) {
+      iconColor = colorScheme.tertiary;
+    } else {
+      iconColor = colorScheme.error;
+    }
+
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
       child: Padding(
@@ -167,10 +171,10 @@ class _MovementCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, style: TextStyle(fontWeight: FontWeight.bold)),
-                  Text(formatDate(date), style: TextStyle(fontSize: 12)),
+                  Text(title, style: textTheme.titleMedium),
+                  Text(formatDate(date), style: textTheme.bodySmall),
                   for (final detail in details)
-                    Text(detail, style: TextStyle(fontSize: 12)),
+                    Text(detail, style: textTheme.bodySmall),
                 ],
               ),
             ),

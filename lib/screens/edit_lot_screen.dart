@@ -7,6 +7,7 @@ import 'package:basic_da_app/providers/product_provider.dart';
 import 'package:basic_da_app/providers/movements_provider.dart';
 
 //widgets
+import 'package:basic_da_app/widgets/confirm_dialog.dart';
 import 'package:basic_da_app/widgets/product_card_widget.dart';
 
 //models
@@ -24,57 +25,49 @@ class EditLotScreen extends StatelessWidget {
         .getProductsByLot(arg!.id);
     return Scaffold(
       appBar: AppBar(
-        title: Text('Editar lote'),
-        backgroundColor: Colors.blueAccent,
+        title: const Text('Editar lote'),
       ),
-      body: Container(
-        padding: EdgeInsets.all(12),
-        margin: EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: Colors.lightBlue,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            //titulo
-            Text(
-              'Lote: ${formatDate(arg.uploadedAt)}',
-              style: TextStyle(fontSize: 20),
-            ),
-            SizedBox(height: 5),
-            //lista de productos agregados
-            Expanded(
-              child: products.isEmpty
-                  ? const Center(child: Text('No hay productos'))
-                  : ListView.builder(
-                      itemCount: products.length,
-                      itemBuilder: (context, index) {
-                        final ProductModel product = products[index];
-
-                        return ProductCardWidget(product: product);
-                      },
-                    ),
-            ),
-            //totales
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text('Precio total de venta: ${arg.totalPrice.toString()}'),
-                Text('Precio total de compra: ${arg.totalCost.toString()}'),
-                Text(
-                  'Ganancia esperada: ${(arg.totalPrice - arg.totalCost).toString()}',
-                ),
-              ],
-            ),
-          ],
+      body: Card(
+        margin: const EdgeInsets.all(12),
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                'Lote: ${formatDate(arg.uploadedAt)}',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              const SizedBox(height: 8),
+              Expanded(
+                child: products.isEmpty
+                    ? const Center(child: Text('No hay productos'))
+                    : ListView.builder(
+                        itemCount: products.length,
+                        itemBuilder: (context, index) {
+                          final ProductModel product = products[index];
+                          return ProductCardWidget(product: product);
+                        },
+                      ),
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text('Precio total de venta: ${arg.totalPrice.toString()}'),
+                  Text('Precio total de compra: ${arg.totalCost.toString()}'),
+                  Text(
+                    'Ganancia esperada: ${(arg.totalPrice - arg.totalCost).toString()}',
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
       bottomNavigationBar: BottomAppBar(
-        height: 60,
+        height: 68,
         child: Row(
-          spacing: 20,
+          spacing: 16,
           children: [
             Expanded(
               child: ElevatedButton(
@@ -82,72 +75,37 @@ class EditLotScreen extends StatelessWidget {
                     ? null
                     : () async {
                         final movementsProvider = context.read<MovementsProvider>();
-                        final result = await showDialog(
-                          context: context,
-                          barrierDismissible: false,
-                          builder: (_) => AlertDialog(
-                            title: Text('Desactivar lote'),
-                            content: Text(
+                        final result = await ConfirmDialog.show(
+                          context,
+                          title: 'Desactivar lote',
+                          message:
                               'Se desactivara todo el lote, desea continuar?',
-                            ),
-                            actions: [
-                              TextButton(
-                                child: Text('Cancelar'),
-                                onPressed: () {
-                                  Navigator.pop(context, false);
-                                },
-                              ),
-                              ElevatedButton(
-                                child: Text('Aceptar'),
-                                onPressed: () {
-                                  Navigator.pop(context, true);
-                                },
-                              ),
-                            ],
-                          ),
                         );
-                        if (result == true) {
+                        if (result) {
                           await movementsProvider.deactivateLot(arg);
                           if (context.mounted) {
                             Navigator.pop(context);
                           }
                         }
                       },
-                child: Text('Desactivar'),
+                child: const Text('Desactivar'),
               ),
             ),
             Expanded(
               child: ElevatedButton(
                 onPressed: () async {
-                  final result = await showDialog(
-                    context: context,
-                    barrierDismissible: false,
-                    builder: (_) => AlertDialog(
-                      title: Text('Finalizar'),
-                      content: Text('Desea finalizar con el ajuste?'),
-                      actions: [
-                        TextButton(
-                          child: Text('Cancelar'),
-                          onPressed: () {
-                            Navigator.pop(context, false);
-                          },
-                        ),
-                        ElevatedButton(
-                          child: Text('Aceptar'),
-                          onPressed: () {
-                            Navigator.pop(context, true);
-                          },
-                        ),
-                      ],
-                    ),
+                  final result = await ConfirmDialog.show(
+                    context,
+                    title: 'Finalizar',
+                    message: 'Desea finalizar con el ajuste?',
                   );
-                  if (result == true) {
+                  if (result) {
                     if (context.mounted) {
                       Navigator.pop(context);
                     }
                   }
                 },
-                child: Text('Listo'),
+                child: const Text('Listo'),
               ),
             ),
           ],

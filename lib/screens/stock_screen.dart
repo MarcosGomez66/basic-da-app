@@ -31,52 +31,48 @@ class StockScreen extends StatelessWidget {
       body: ListView.builder(
         itemCount: lots.length,
         itemBuilder: (context, index) {
-          return Container(
-            padding: EdgeInsets.all(8),
-            margin: EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: Colors.lightBlue,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Row(
-                  children: [
-                    Expanded(
-                      flex: 8,
-                      child: Text(
-                        'Lote: ${formatDate(lots[index].uploadedAt)}',
-                        style: TextStyle(fontSize: 20),
+          return Card(
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        flex: 8,
+                        child: Text(
+                          'Lote: ${formatDate(lots[index].uploadedAt)}',
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
                       ),
-                    ),
-                    Expanded(
-                      flex: 2,
-                      child: IconButton(
-                        icon: Icon(Icons.edit),
-                        onPressed: () {
-                          Navigator.pushNamed(
-                            context,
-                            '/edit_lot',
-                            arguments: lots[index],
-                          );
-                        },
+                      Expanded(
+                        flex: 2,
+                        child: IconButton(
+                          icon: const Icon(Icons.edit),
+                          onPressed: () {
+                            Navigator.pushNamed(
+                              context,
+                              '/edit_lot',
+                              arguments: lots[index],
+                            );
+                          },
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-                Text(
-                  'Precio total de venta: ${lots[index].totalPrice.toString()}',
-                ),
-                Text(
-                  'Precio total de compra: ${lots[index].totalCost.toString()}',
-                ),
-                Text(
-                  'Ganancia esperada: ${(lots[index].totalPrice - lots[index].totalCost).toString()}',
-                ),
-                Text('Total de articulos: ${lots[index].totalArticles}'),
-              ],
+                    ],
+                  ),
+                  Text(
+                    'Precio total de venta: ${lots[index].totalPrice.toString()}',
+                  ),
+                  Text(
+                    'Precio total de compra: ${lots[index].totalCost.toString()}',
+                  ),
+                  Text(
+                    'Ganancia esperada: ${(lots[index].totalPrice - lots[index].totalCost).toString()}',
+                  ),
+                  Text('Total de articulos: ${lots[index].totalArticles}'),
+                ],
+              ),
             ),
           );
         },

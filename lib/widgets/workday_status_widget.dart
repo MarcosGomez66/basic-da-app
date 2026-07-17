@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 // models
 import 'package:basic_da_app/models/workday_model.dart';
 //providers
+import 'package:basic_da_app/widgets/confirm_dialog.dart';
 import 'package:provider/provider.dart';
 
 class WorkdayStatusWidget extends StatelessWidget {
@@ -21,11 +22,11 @@ class WorkdayStatusWidget extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         StatusText(isOpen: isOpen),
-        SizedBox(height: 6),
+        const SizedBox(height: 8),
         StatusButton(businessId: businessId, isOpen: isOpen),
-        SizedBox(height: 6),
+        const SizedBox(height: 8),
         TextButton(
-          child: Text('Ver todas las Jornadas'),
+          child: const Text('Ver todas las Jornadas'),
           onPressed: () {
             Navigator.pushNamed(context, '/workdays');
           },
@@ -41,12 +42,11 @@ class StatusText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Text(
       isOpen ? 'Jornada Abierta' : 'Jornada Cerrada',
-      style: TextStyle(
-        fontSize: 24,
-        fontWeight: FontWeight.bold,
-        color: isOpen ? Colors.green : Colors.redAccent,
+      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+        color: isOpen ? colorScheme.primary : colorScheme.error,
       ),
     );
   }
@@ -66,41 +66,21 @@ class StatusButton extends StatelessWidget {
     return ElevatedButton(
       onPressed: () async {
         final workdayProvider = context.read<WorkdayProvider>();
-        //iniciar jornada
         if (!isOpen) {
           await workdayProvider.startWorkday(businessId: businessId);
           return;
         }
-        //terminar jornada
-        final confirm = await showDialog<bool>(
-          context: context,
-          builder: (context) {
-            return AlertDialog(
-              title: const Text('Cerrar jornada'),
-              content: const Text('Seguro que desea terminar la jornada?'),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.pop(context, false);
-                  },
-                  child: const Text('Cancelar'),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context, true);
-                  },
-                  child: const Text('Aceptar'),
-                ),
-              ],
-            );
-          },
+        final confirm = await ConfirmDialog.show(
+          context,
+          title: 'Cerrar jornada',
+          message: 'Seguro que desea terminar la jornada?',
         );
-        if (confirm == true) {
+        if (confirm) {
           await workdayProvider.endWorkday();
           if (context.mounted) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(const SnackBar(content: Text('Jornada Finalizada')));
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Jornada Finalizada')),
+            );
           }
         }
       },

@@ -10,40 +10,14 @@ import 'package:basic_da_app/providers/workday_provider.dart';
 
 //models
 import 'package:basic_da_app/models/item_model.dart';
-import 'package:basic_da_app/models/product_model.dart';
 
 //widget
+import 'package:basic_da_app/widgets/confirm_dialog.dart';
 import 'package:basic_da_app/widgets/sale_form_widget.dart';
 import 'package:basic_da_app/widgets/item_card_widget.dart';
 
 class SaleScreen extends StatelessWidget {
   const SaleScreen({super.key});
-
-  Future<bool> _confirmDiscardDraft(BuildContext context) async {
-    final result = await showDialog<bool>(
-      context: context,
-      barrierDismissible: false,
-      builder: (_) => AlertDialog(
-        title: Text('Salir'),
-        content: Text('Se descartara la venta, desea continuar'),
-        actions: [
-          TextButton(
-            child: Text('Cancelar'),
-            onPressed: () {
-              Navigator.pop(context, false);
-            },
-          ),
-          ElevatedButton(
-            child: Text('Aceptar'),
-            onPressed: () {
-              Navigator.pop(context, true);
-            },
-          ),
-        ],
-      ),
-    );
-    return result ?? false;
-  }
 
   Future<void> _exitSaleScreen(BuildContext context) async {
     final draftProvider = context.read<DraftProvider>();
@@ -53,7 +27,11 @@ class SaleScreen extends StatelessWidget {
       return;
     }
 
-    final shouldDiscard = await _confirmDiscardDraft(context);
+    final shouldDiscard = await ConfirmDialog.show(
+      context,
+      title: 'Salir',
+      message: 'Se descartara la venta, desea continuar',
+    );
 
     if (!context.mounted || !shouldDiscard) return;
 
@@ -80,110 +58,83 @@ class SaleScreen extends StatelessWidget {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text('Venta'),
-          backgroundColor: Colors.blueAccent,
+          title: const Text('Venta'),
           leading: IconButton(
-            icon: Icon(Icons.arrow_back),
+            icon: const Icon(Icons.arrow_back),
             onPressed: () => _exitSaleScreen(context),
           ),
         ),
-        body: Container(
-          padding: EdgeInsets.all(12),
-          margin: EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: Colors.lightBlue,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              //titulo
-              Text('Venta: $now', style: TextStyle(fontSize: 20)),
-              //boton para agregar item
-              ElevatedButton.icon(
-                label: Text('Agregar producto'),
-                icon: const Icon(Icons.add),
-                onPressed: () async {
-                  final draftProvider = context.read<DraftProvider>();
-                  final item = await showDialog(
-                    barrierDismissible: false,
-                    context: context,
-                    builder: (_) => const SaleFormWidget(),
-                  );
-                  if (item != null) {
-                    draftProvider.addItem(item);
-                  }
-                },
-              ),
-              //lista de ventas a registrar
-              Expanded(
-                child: itemsDraft.isEmpty
-                    ? const Center(child: Text('Que vas a vender?'))
-                    : ListView.builder(
-                        itemCount: itemsDraft.length,
-                        itemBuilder: (context, index) {
-                          final ItemModel itemDraft = itemsDraft[index];
-                          return ItemCardWidget(item: itemDraft);
-                        },
-                      ),
-              ),
-              //totales
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [Text('Total a vender: ${totalSold(itemsDraft)}')],
-              ),
-            ],
+        body: Card(
+          margin: const EdgeInsets.all(12),
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text('Venta: $now', style: Theme.of(context).textTheme.titleLarge),
+                const SizedBox(height: 8),
+                ElevatedButton.icon(
+                  label: const Text('Agregar producto'),
+                  icon: const Icon(Icons.add),
+                  onPressed: () async {
+                    final draftProvider = context.read<DraftProvider>();
+                    final item = await showDialog(
+                      barrierDismissible: false,
+                      context: context,
+                      builder: (_) => const SaleFormWidget(),
+                    );
+                    if (item != null) {
+                      draftProvider.addItem(item);
+                    }
+                  },
+                ),
+                Expanded(
+                  child: itemsDraft.isEmpty
+                      ? const Center(child: Text('Que vas a vender?'))
+                      : ListView.builder(
+                          itemCount: itemsDraft.length,
+                          itemBuilder: (context, index) {
+                            final ItemModel itemDraft = itemsDraft[index];
+                            return ItemCardWidget(item: itemDraft);
+                          },
+                        ),
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [Text('Total a vender: ${totalSold(itemsDraft)}')],
+                ),
+              ],
+            ),
           ),
         ),
         bottomNavigationBar: BottomAppBar(
-          height: 60,
+          height: 68,
           child: Row(
-            spacing: 20,
+            spacing: 16,
             children: [
               Expanded(
                 child: ElevatedButton(
-                  child: Text('Limpiar'),
                   onPressed: itemsDraft.isEmpty
                       ? null
                       : () async {
-                          final draftProvider = context
-                              .read<DraftProvider>();
-                          final result = await showDialog(
-                            context: context,
-                            barrierDismissible: false,
-                            builder: (_) => AlertDialog(
-                              title: Text('Limpiar'),
-                              content: Text(
-                                'Se borrara todo el contenido no registrado, desea coninuar?',
-                              ),
-                              actions: [
-                                TextButton(
-                                  child: Text('Cancelar'),
-                                  onPressed: () {
-                                    Navigator.pop(context, false);
-                                  },
-                                ),
-                                ElevatedButton(
-                                  child: Text('Aceptar'),
-                                  onPressed: () {
-                                    Navigator.pop(context, true);
-                                  },
-                                ),
-                              ],
-                            ),
+                          final draftProvider = context.read<DraftProvider>();
+                          final result = await ConfirmDialog.show(
+                            context,
+                            title: 'Limpiar',
+                            message:
+                                'Se borrara todo el contenido no registrado, desea continuar?',
                           );
-                          if (result == true) {
+                          if (result) {
                             draftProvider.clearItems();
                           }
                         },
+                  child: const Text('Limpiar'),
                 ),
               ),
               Expanded(
                 child: Consumer<DraftProvider>(
                   builder: (context, draftProvider, child) {
                     return ElevatedButton(
-                      child: Text('Registrar'),
                       onPressed: itemsDraft.isEmpty ? null : () async {
                         final draftProvider = context.read<DraftProvider>();
                         final movementProvider = context.read<MovementsProvider>();
@@ -193,7 +144,7 @@ class SaleScreen extends StatelessWidget {
                         if (workday == null) {
                           if (!context.mounted) return;
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('No hay jornada abierta')),
+                            const SnackBar(content: Text('No hay jornada abierta')),
                           );
                           return;
                         }
@@ -207,7 +158,7 @@ class SaleScreen extends StatelessWidget {
                           draftProvider.clearItems();
                           if (!context.mounted) return;
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Venta registrada')),
+                            const SnackBar(content: Text('Venta registrada')),
                           );
                           Navigator.pop(context);
                         } catch (e) {
@@ -217,6 +168,7 @@ class SaleScreen extends StatelessWidget {
                           );
                         }
                       },
+                      child: const Text('Registrar'),
                     );
                   },
                 ),

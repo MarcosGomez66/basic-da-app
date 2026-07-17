@@ -10,6 +10,9 @@ import 'package:basic_da_app/models/item_model.dart';
 import 'package:basic_da_app/providers/draft_provider.dart';
 import 'package:basic_da_app/providers/product_provider.dart';
 
+// widgets
+import 'package:basic_da_app/widgets/confirm_dialog.dart';
+
 class ItemCardWidget extends StatelessWidget {
   final ItemModel item;
 
@@ -19,10 +22,8 @@ class ItemCardWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final ProductModel? product = context.read<ProductProvider>().getProductById(item.productId);
     return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       child: Padding(
-        padding: EdgeInsets.all(8),
+        padding: const EdgeInsets.all(8),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -45,7 +46,7 @@ class ItemCardWidget extends StatelessWidget {
                   child: Column(
                     children: [
                       IconButton(
-                        icon: Icon(Icons.edit),
+                        icon: const Icon(Icons.edit),
                         onPressed: () async {
                           final draftProvider = context.read<DraftProvider>();
                           final newItem = await showDialog<ItemModel>(
@@ -59,30 +60,18 @@ class ItemCardWidget extends StatelessWidget {
                         },
                       ),
                       IconButton(
-                        icon: Icon(Icons.delete),
+                        icon: const Icon(Icons.delete),
                         onPressed: () async {
-                          showDialog(
-                            context: context,
-                            barrierDismissible: false,
-                            builder: (_) => AlertDialog(
-                              title: Text('Desea borrar esta venta'),
-                              actions: [
-                                TextButton(
-                                  child: Text('Cancelar'),
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                  },
-                                ),
-                                ElevatedButton(
-                                  child: Text('Aceptar'),
-                                  onPressed: () {
-                                    context.read<DraftProvider>().removeItem(item);
-                                    Navigator.pop(context);
-                                  },
-                                )
-                              ],
-                            )
+                          final result = await ConfirmDialog.show(
+                            context,
+                            title: 'Borrar venta',
+                            message: 'Desea borrar esta venta?',
                           );
+                          if (result) {
+                            if (context.mounted) {
+                              context.read<DraftProvider>().removeItem(item);
+                            }
+                          }
                         },
                       )
                     ],

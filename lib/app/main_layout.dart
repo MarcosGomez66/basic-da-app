@@ -5,7 +5,6 @@ import 'package:basic_da_app/screens/summary_screen.dart';
 import 'package:basic_da_app/screens/dashboard_screen.dart';
 import 'package:basic_da_app/screens/stock_screen.dart';
 import 'package:basic_da_app/screens/extra_screen.dart';
-import 'package:basic_da_app/screens/sale_screen.dart';
 //providers
 import 'package:basic_da_app/providers/workday_provider.dart';
 import 'package:basic_da_app/providers/business_provider.dart';
@@ -58,7 +57,9 @@ class _MainLayoutState extends State<MainLayout> {
             IconButton(
               icon: Icon(
                 Icons.home,
-                color: currentIndex == 0 ? Colors.deepPurple : Colors.grey,
+                color: currentIndex == 0
+                    ? Theme.of(context).colorScheme.primary
+                    : Theme.of(context).colorScheme.onSurfaceVariant,
               ),
               onPressed: () => setState(() => currentIndex = 0),
             ),
@@ -66,7 +67,9 @@ class _MainLayoutState extends State<MainLayout> {
             IconButton(
               icon: Icon(
                 Icons.dashboard,
-                color: currentIndex == 1 ? Colors.deepPurple : Colors.grey,
+                color: currentIndex == 1
+                    ? Theme.of(context).colorScheme.primary
+                    : Theme.of(context).colorScheme.onSurfaceVariant,
               ),
               onPressed: () => setState(() => currentIndex = 1),
             ),
@@ -74,7 +77,9 @@ class _MainLayoutState extends State<MainLayout> {
             IconButton(
               icon: Icon(
                 Icons.inventory,
-                color: currentIndex == 2 ? Colors.deepPurple : Colors.grey,
+                color: currentIndex == 2
+                    ? Theme.of(context).colorScheme.primary
+                    : Theme.of(context).colorScheme.onSurfaceVariant,
               ),
               onPressed: () => setState(() => currentIndex = 2),
             ),
@@ -82,7 +87,9 @@ class _MainLayoutState extends State<MainLayout> {
             IconButton(
               icon: Icon(
                 Icons.settings,
-                color: currentIndex == 3 ? Colors.deepPurple : Colors.grey,
+                color: currentIndex == 3
+                    ? Theme.of(context).colorScheme.primary
+                    : Theme.of(context).colorScheme.onSurfaceVariant,
               ),
               onPressed: () => setState(() => currentIndex = 3),
             ),

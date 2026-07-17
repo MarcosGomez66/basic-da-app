@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:basic_da_app/app/theme.dart';
 import 'package:basic_da_app/app/routes.dart';
 
 class MyApp extends StatelessWidget {
@@ -8,10 +9,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'BasicDA app',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
+      theme: appTheme(),
       initialRoute: '/',
       routes: appRoutes,
     );

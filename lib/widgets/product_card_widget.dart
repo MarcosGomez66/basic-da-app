@@ -14,6 +14,7 @@ import 'package:basic_da_app/providers/movements_provider.dart';
 
 // widgets
 import 'package:basic_da_app/widgets/product_form_widget.dart';
+import 'package:basic_da_app/widgets/confirm_dialog.dart';
 
 class ProductDraftCardWidget extends StatelessWidget {
   final ProductDraft product;
@@ -22,15 +23,15 @@ class ProductDraftCardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
     return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       child: Padding(
-        padding: EdgeInsets.all(8),
+        padding: const EdgeInsets.all(8),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Center(child: Text(product.name, style: TextStyle(fontSize: 22))),
+            Center(child: Text(product.name, style: textTheme.headlineSmall)),
             Row(
               children: [
                 Expanded(
@@ -54,10 +55,9 @@ class ProductDraftCardWidget extends StatelessWidget {
                   child: Column(
                     children: [
                       IconButton(
-                        icon: Icon(Icons.edit),
+                        icon: const Icon(Icons.edit),
                         onPressed: () async {
-                          final draftProvider = context
-                              .read<DraftProvider>();
+                          final draftProvider = context.read<DraftProvider>();
                           final newProduct = await showDialog<ProductDraft>(
                             context: context,
                             barrierDismissible: false,
@@ -70,33 +70,16 @@ class ProductDraftCardWidget extends StatelessWidget {
                         },
                       ),
                       IconButton(
-                        icon: Icon(Icons.delete),
+                        icon: const Icon(Icons.delete),
                         onPressed: () async {
-                          showDialog(
-                            context: context,
-                            barrierDismissible: false,
-                            builder: (_) => AlertDialog(
-                              title: Text('Borrar'),
-                              content: Text('Desea borrar este producto?'),
-                              actions: [
-                                TextButton(
-                                  child: Text('Cancelar'),
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                  },
-                                ),
-                                ElevatedButton(
-                                  child: Text('Aceptar'),
-                                  onPressed: () {
-                                    context.read<DraftProvider>().removeProduct(
-                                      product,
-                                    );
-                                    Navigator.pop(context);
-                                  },
-                                ),
-                              ],
-                            ),
+                          final result = await ConfirmDialog.show(
+                            context,
+                            title: 'Borrar',
+                            message: 'Desea borrar este producto?',
                           );
+                          if (result && context.mounted) {
+                            context.read<DraftProvider>().removeProduct(product);
+                          }
                         },
                       ),
                     ],
@@ -118,15 +101,15 @@ class ProductCardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
     return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       child: Padding(
-        padding: EdgeInsets.all(8),
+        padding: const EdgeInsets.all(8),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Center(child: Text(product.name, style: TextStyle(fontSize: 22))),
+            Center(child: Text(product.name, style: textTheme.headlineSmall)),
             Row(
               children: [
                 Expanded(
@@ -150,10 +133,9 @@ class ProductCardWidget extends StatelessWidget {
                   child: Column(
                     children: [
                       IconButton(
-                        icon: Icon(Icons.edit),
+                        icon: const Icon(Icons.edit),
                         onPressed: () async {
-                          final productProvider = context
-                              .read<ProductProvider>();
+                          final productProvider = context.read<ProductProvider>();
                           final nameController = TextEditingController(
                             text: product.name,
                           );
@@ -163,14 +145,13 @@ class ProductCardWidget extends StatelessWidget {
                           final minStockController = TextEditingController(
                             text: product.minStock.toString(),
                           );
-
                           final formKey = GlobalKey<FormState>();
 
-                          final bool result = await showDialog(
+                          final result = await showDialog(
                             context: context,
                             barrierDismissible: false,
                             builder: (_) => AlertDialog(
-                              title: Text('Modificar'),
+                              title: const Text('Modificar'),
                               content: Form(
                                 key: formKey,
                                 child: Column(
@@ -179,7 +160,7 @@ class ProductCardWidget extends StatelessWidget {
                                     TextFormField(
                                       controller: nameController,
                                       maxLength: 25,
-                                      decoration: InputDecoration(
+                                      decoration: const InputDecoration(
                                         labelText: 'Nombre del producto',
                                       ),
                                       validator: StringValidator.required,
@@ -187,7 +168,7 @@ class ProductCardWidget extends StatelessWidget {
                                     TextFormField(
                                       controller: groupController,
                                       maxLength: 25,
-                                      decoration: InputDecoration(
+                                      decoration: const InputDecoration(
                                         labelText: 'Grupo',
                                       ),
                                       validator: StringValidator.required,
@@ -199,7 +180,7 @@ class ProductCardWidget extends StatelessWidget {
                                         FilteringTextInputFormatter.digitsOnly,
                                         LengthLimitingTextInputFormatter(4),
                                       ],
-                                      decoration: InputDecoration(
+                                      decoration: const InputDecoration(
                                         labelText: 'Cantidad minima',
                                       ),
                                       validator: NumberValidator.required,
@@ -209,13 +190,12 @@ class ProductCardWidget extends StatelessWidget {
                               ),
                               actions: [
                                 TextButton(
-                                  child: Text('Cancelar'),
-                                  onPressed: () {
-                                    Navigator.pop(context, false);
-                                  },
+                                  child: const Text('Cancelar'),
+                                  onPressed: () =>
+                                      Navigator.pop(context, false),
                                 ),
                                 ElevatedButton(
-                                  child: Text('Guardar'),
+                                  child: const Text('Guardar'),
                                   onPressed: () {
                                     if (!formKey.currentState!.validate()) {
                                       return;
@@ -237,20 +217,21 @@ class ProductCardWidget extends StatelessWidget {
                         },
                       ),
                       IconButton(
-                        icon: Icon(Icons.block),
+                        icon: const Icon(Icons.block),
                         onPressed: () async {
-                          final movementsProvider = context
-                              .read<MovementsProvider>();
+                          final movementsProvider =
+                              context.read<MovementsProvider>();
                           final controller = TextEditingController(
                             text: product.stock.toString(),
                           );
                           final key = GlobalKey<FormState>();
                           double? subtrahend;
+
                           final result = await showDialog(
                             context: context,
                             barrierDismissible: false,
                             builder: (_) => AlertDialog(
-                              title: Text('Merma'),
+                              title: const Text('Merma'),
                               content: Form(
                                 key: key,
                                 child: TextFormField(
@@ -260,7 +241,7 @@ class ProductCardWidget extends StatelessWidget {
                                     FilteringTextInputFormatter.digitsOnly,
                                     LengthLimitingTextInputFormatter(4),
                                   ],
-                                  decoration: InputDecoration(
+                                  decoration: const InputDecoration(
                                     labelText: 'Cantidad a descartar',
                                   ),
                                   validator: SubtractionValidator.max(
@@ -270,13 +251,12 @@ class ProductCardWidget extends StatelessWidget {
                               ),
                               actions: [
                                 TextButton(
-                                  child: Text('Cancelar'),
-                                  onPressed: () {
-                                    Navigator.pop(context, false);
-                                  },
+                                  child: const Text('Cancelar'),
+                                  onPressed: () =>
+                                      Navigator.pop(context, false),
                                 ),
                                 ElevatedButton(
-                                  child: Text('Aceptar'),
+                                  child: const Text('Aceptar'),
                                   onPressed: () {
                                     if (!key.currentState!.validate()) {
                                       return;

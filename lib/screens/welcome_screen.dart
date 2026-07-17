@@ -69,6 +69,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     final businesses = businessBox.values.toList();
     final args = ModalRoute.of(context)?.settings.arguments;
     final isChanging = args == 'change';
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
       body: SafeArea(
@@ -78,24 +80,26 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const SizedBox(height: 40),
-              // Texto de bienvenida
               Text(
                 isChanging ? 'Cambiar negocio' : 'Bienvenido',
-                style: TextStyle(fontSize: 36, color: Colors.grey),
+                style: textTheme.headlineLarge?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                ),
                 textAlign: TextAlign.center,
               ),
-              const Text(
+              Text(
                 'Selecciona un negocio o crea uno nuevo',
-                style: TextStyle(fontSize: 16, color: Colors.grey),
+                style: textTheme.bodyLarge?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                ),
                 textAlign: TextAlign.center,
               ),
-              //lista de negocios
               Expanded(
                 child: businesses.isEmpty
-                    ? const Center(
+                    ? Center(
                         child: Text(
                           'No hay negocios',
-                          style: TextStyle(fontSize: 16),
+                          style: textTheme.bodyLarge,
                         ),
                       )
                     : ListView.builder(
@@ -103,36 +107,28 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                         itemBuilder: (context, index) {
                           final business = businesses[index];
 
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 8),
-                            child: Card(
-                              elevation: 2,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16),
+                          return Card(
+                            child: ListTile(
+                              title: Text(
+                                business.name,
+                                textAlign: TextAlign.center,
                               ),
-                              child: ListTile(
-                                title: Text(
-                                  business.name,
-                                  textAlign: TextAlign.center,
-                                ),
-                                onTap: () {
-                                  context
-                                      .read<BusinessProvider>()
-                                      .selectBusiness(business);
+                              onTap: () {
+                                context
+                                    .read<BusinessProvider>()
+                                    .selectBusiness(business);
 
-                                  Navigator.popAndPushNamed(
-                                    context,
-                                    '/home',
-                                  );
-                                },
-                              ),
+                                Navigator.popAndPushNamed(
+                                  context,
+                                  '/home',
+                                );
+                              },
                             ),
                           );
                         },
                       ),
               ),
-              const SizedBox(height: 20),
-              //Boton
+              const SizedBox(height: 24),
               SizedBox(
                 width: double.infinity,
                 height: 55,
