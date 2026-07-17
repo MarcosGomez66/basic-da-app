@@ -119,7 +119,7 @@ class SaleScreen extends StatelessWidget {
               //lista de ventas a registrar
               Expanded(
                 child: itemsDraft.isEmpty
-                    ? const Center(child: Text('Que vas a vender'))
+                    ? const Center(child: Text('Que vas a vender?'))
                     : ListView.builder(
                         itemCount: itemsDraft.length,
                         itemBuilder: (context, index) {

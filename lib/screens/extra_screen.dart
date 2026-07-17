@@ -21,7 +21,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: Text('Configuración'),
+        title: Text('Extras'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -34,6 +34,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
               },
               icon: const Icon(Icons.history),
               label: const Text('Ver historial de movimientos'),
+            ),
+            const SizedBox(height: 12),
+            ElevatedButton.icon(
+              onPressed: () {
+                Navigator.pushNamed(context, '/', arguments: 'change');
+              },
+              icon: const Icon(Icons.swap_horiz),
+              label: const Text('Cambiar negocio'),
             ),
           ],
         ),

@@ -67,6 +67,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   @override
   Widget build(BuildContext context) {
     final businesses = businessBox.values.toList();
+    final args = ModalRoute.of(context)?.settings.arguments;
+    final isChanging = args == 'change';
 
     return Scaffold(
       body: SafeArea(
@@ -77,8 +79,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
             children: [
               const SizedBox(height: 40),
               // Texto de bienvenida
-              const Text(
-                'Bienvenido/a',
+              Text(
+                isChanging ? 'Cambiar negocio' : 'Bienvenido',
                 style: TextStyle(fontSize: 36, color: Colors.grey),
                 textAlign: TextAlign.center,
               ),
@@ -118,7 +120,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                                       .read<BusinessProvider>()
                                       .selectBusiness(business);
 
-                                  Navigator.pushReplacementNamed(
+                                  Navigator.popAndPushNamed(
                                     context,
                                     '/home',
                                   );
