@@ -6,6 +6,8 @@ import 'package:basic_da_app/app/helpers.dart';
 import 'package:basic_da_app/providers/movements_provider.dart';
 import 'package:basic_da_app/providers/business_provider.dart';
 
+import 'package:basic_da_app/widgets/movement_card_widget.dart';
+
 enum MovementFilter { all, lot, sale, waste }
 
 class MovementsHistoryScreen extends StatefulWidget {
@@ -55,12 +57,6 @@ class _MovementsHistoryScreenState extends State<MovementsHistoryScreen> {
               spacing: 8,
               children: [
                 FilterChip(
-                  label: const Text('Todos'),
-                  selected: _selectedFilter == MovementFilter.all,
-                  onSelected: (_) =>
-                      setState(() => _selectedFilter = MovementFilter.all),
-                ),
-                FilterChip(
                   label: const Text('Lotes'),
                   selected: _selectedFilter == MovementFilter.lot,
                   onSelected: (_) =>
@@ -77,6 +73,12 @@ class _MovementsHistoryScreenState extends State<MovementsHistoryScreen> {
                   selected: _selectedFilter == MovementFilter.waste,
                   onSelected: (_) =>
                       setState(() => _selectedFilter = MovementFilter.waste),
+                ),
+                FilterChip(
+                  label: const Text('Todos'),
+                  selected: _selectedFilter == MovementFilter.all,
+                  onSelected: (_) =>
+                      setState(() => _selectedFilter = MovementFilter.all),
                 ),
               ],
             ),
@@ -98,7 +100,7 @@ class _MovementsHistoryScreenState extends State<MovementsHistoryScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 12),
       children: [
         for (final lot in lots)
-          _MovementCard(
+          MovementCard(
             icon: Icons.inventory_2,
             title: 'Lote registrado',
             date: lot.uploadedAt,
@@ -108,7 +110,7 @@ class _MovementsHistoryScreenState extends State<MovementsHistoryScreen> {
             ],
           ),
         for (final sale in sales)
-          _MovementCard(
+          MovementCard(
             icon: Icons.point_of_sale,
             title: 'Venta registrada',
             date: sale.soldAt,
@@ -118,7 +120,7 @@ class _MovementsHistoryScreenState extends State<MovementsHistoryScreen> {
             ],
           ),
         for (final waste in wastes)
-          _MovementCard(
+          MovementCard(
             icon: Icons.delete_outline,
             title: 'Merma registrada',
             date: waste.wastedAt,
@@ -132,55 +134,3 @@ class _MovementsHistoryScreenState extends State<MovementsHistoryScreen> {
   }
 }
 
-class _MovementCard extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final DateTime date;
-  final List<String> details;
-
-  const _MovementCard({
-    required this.icon,
-    required this.title,
-    required this.date,
-    required this.details,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-
-    final Color iconColor;
-    if (icon == Icons.inventory_2) {
-      iconColor = colorScheme.primary;
-    } else if (icon == Icons.point_of_sale) {
-      iconColor = colorScheme.tertiary;
-    } else {
-      iconColor = colorScheme.error;
-    }
-
-    return Card(
-      margin: const EdgeInsets.only(bottom: 8),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Row(
-          children: [
-            Icon(icon, color: iconColor, size: 32),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(title, style: textTheme.titleMedium),
-                  Text(formatDate(date), style: textTheme.bodySmall),
-                  for (final detail in details)
-                    Text(detail, style: textTheme.bodySmall),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
